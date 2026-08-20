@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VYNTRA AI — Admin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#090b12;color:#f4f6ff}
+header{height:72px;border-bottom:1px solid #252b3c;display:flex;align-items:center;justify-content:space-between;padding:0 7%;background:#0d101a}
+.brand{font-size:22px;font-weight:800}.dot{display:inline-block;width:9px;height:9px;background:#56e39f;border-radius:50%;margin-right:8px}
+main{width:min(1100px,92vw);margin:55px auto}.eyebrow{color:#9b83ff;letter-spacing:3px;font-size:12px;font-weight:800}
+h1{font-size:52px;margin:12px 0}.lead{color:#9da7bd;font-size:17px}
+.panel{margin-top:35px;background:#111624;border:1px solid #252d42;border-radius:24px;padding:28px}
+.row{display:flex;gap:12px;justify-content:space-between;align-items:center}.btn{border:0;border-radius:11px;padding:11px 16px;font-weight:700;cursor:pointer}.refresh{background:#7657ff;color:white}.logout{background:#242b3d;color:white}
+#secretBox{margin:20px 0;padding:18px;background:#0b0f19;border-radius:16px}input{width:100%;padding:13px;border:1px solid #333b52;border-radius:11px;background:#0b0f19;color:#fff}
+.user{border:1px solid #293148;border-radius:17px;padding:20px;margin-top:14px;background:#0d121f}.name{font-size:18px;font-weight:800}.meta{color:#929db4;margin-top:5px}
+.actions{display:flex;gap:10px;margin-top:16px}.approve{background:#62e6a7;color:#062516}.deny{background:#ff7474;color:#300}
+#status{margin-top:16px;min-height:24px}.ok{color:#65e5a5}.err{color:#ff8c8c}
+.empty{text-align:center;color:#8792aa;padding:50px}
+</style>
+</head>
+<body>
+<header><div class="brand">VYNTRA AI <span style="color:#7f8aa3">Admin</span></div><div><span class="dot"></span>Admin Console</div></header>
+<main>
+<div class="eyebrow">ACCESS MANAGEMENT</div>
+<h1>Admin Panel</h1>
+<div class="lead">Review pending users and approve or deny access.</div>
+
+<div class="panel">
+  <div class="row">
+    <div><h2 style="margin:0">Pending Requests</h2><div style="color:#8994aa">D1 users waiting for approval</div></div>
+    <div><button class="btn refresh" onclick="loadUsers()">↻ Refresh</button><button class="btn logout" onclick="logout()">Logout</button></div>
+  </div>
+  <div id="secretBox">
+    <label>Admin Secret</label>
+    <input id="secret" type="password" placeholder="Enter ADMIN_SECRET">
+  </div>
+  <div id="status"></div>
+  <div id="users"></div>
+</div>
+</main>
+
+<script>
+const API_URL="https://vyntra-ai-api.ezhilarasanpofficial.workers.dev";
+const $=id=>document.getElementById(id);
+function setStatus(t,ok=false){$("status").textContent=t;$("status").className=ok?"ok":"err"}
+
+async function loadUsers(){
+  const secret=$("secret").value.trim();
+  if(!secret){setStatus("Enter ADMIN_SECRET first.");return}
+  setStatus("Loading...");
+  try{
+    const r=await fetch(API_URL+"/admin/pending",{headers:{"X-Admin-Secret":secret}});
+    const d=await r.json();
+    if(!r.ok||!d.success){setStatus(d.error||"Admin request failed.");return}
+    setStatus("Loaded "+(d.users||[]).length+" pending request(s).",true);
+    render(d.users||[]);
+  }catch(e){setStatus("Cannot connect to VYNTRA AI API.")}
+}
+
+function render(users){
+  if(!users.length){$("users").innerHTML='<div class="empty">✓<br><br><b>No pending requests</b><br>All requests have been reviewed.</div>';return}
+  $("users").innerHTML=users.map(u=>`
+    <div class="user">
+      <div class="name">${esc(u.name||"Unknown")}</div>
+      <div class="meta">${esc(u.email||"")} · ${esc(u.mobile||"")}</div>
+      <div class="meta">Requested: ${esc(u.requested_at||"")}</div>
+      <div class="actions">
+        <button class="btn approve" onclick="updateAccess(${JSON.stringify(u.email)} ,'approved')">✓ Approve</button>
+        <button class="btn deny" onclick="updateAccess(${JSON.stringify(u.email)} ,'denied')">✕ Deny</button>
+      </div>
+    </div>`).join("");
+}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+
+async function updateAccess(email,status){
+  const secret=$("secret").value.trim();
+  if(!secret){setStatus("Enter ADMIN_SECRET first.");return}
+  setStatus("Updating "+email+"...");
+  try{
+    const r=await fetch(API_URL+"/admin/update-access",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","X-Admin-Secret":secret},
+      body:JSON.stringify({email,status})
+    });
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.success){setStatus(d.error||"Update failed.");return}
+    setStatus(d.message||("User "+status+" successfully."),true);
+    loadUsers();
+  }catch(e){setStatus("Cannot connect to VYNTRA AI API.")}
+}
+function logout(){ $("secret").value=""; $("users").innerHTML=""; setStatus("Logged out.",true); }
+</script>
+</body>
+</html>
