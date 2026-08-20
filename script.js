@@ -6,7 +6,7 @@ let conversationHistory = [];
 // ==========================================
 
 const API_URL =
-    "https://vyntra-ai-api.ezhilarasanpofficial.workers.dev/chat";
+    "https://vyntra-ai-api.ezhilarasanpofficial.workers.dev";
 
 const GOOGLE_CLIENT_ID =
     "271448546787-sabrgtig9evo5mbkhhnpnpet5g1mrvj8.apps.googleusercontent.com";
@@ -906,7 +906,7 @@ async function sendMessage(message) {
         const response =
             await fetch(
 
-                API_URL,
+                API_URL + "/chat",
 
                 {
 
