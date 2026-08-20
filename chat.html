@@ -1970,9 +1970,34 @@ let selectedImage = null;
 
 let conversation = [];
 
-/* Persistent chat history */
-const CHAT_STORAGE_KEY = "vyntraChats";
-const ACTIVE_CHAT_KEY = "vyntraActiveChat";
+/* =========================================================
+   LOGGED-IN USER + USER-SPECIFIC CHAT STORAGE
+========================================================= */
+let loggedInUser = null;
+let currentUserEmail = "";
+
+try {
+    loggedInUser = JSON.parse(
+        localStorage.getItem("vyntraUser") || "null"
+    );
+} catch (e) {
+    loggedInUser = null;
+}
+
+currentUserEmail = String(
+    loggedInUser?.email ||
+    loggedInUser?.user?.email ||
+    loggedInUser?.profile?.email ||
+    ""
+).trim().toLowerCase();
+
+if (!currentUserEmail) {
+    window.location.href = "index.html";
+}
+
+const USER_STORAGE_ID = encodeURIComponent(currentUserEmail);
+const CHAT_STORAGE_KEY = "vyntraChats:" + USER_STORAGE_ID;
+const ACTIVE_CHAT_KEY = "vyntraActiveChat:" + USER_STORAGE_ID;
 let currentChatId = null;
 let chatStore = loadChatStore();
 let languageMode = "english";
@@ -1981,37 +2006,55 @@ let languageMode = "english";
    USER INFO
 ========================================================= */
 
-try{
+function getLoggedInUserName() {
 
-    const saved =
-        JSON.parse(
-            localStorage.getItem("vyntraUser") || "null"
-        );
+    let name = String(
+        loggedInUser?.name ||
+        loggedInUser?.user?.name ||
+        loggedInUser?.profile?.name ||
+        ""
+    ).trim();
 
-    if(saved){
+    if (name) return name;
 
-        const userName =
-            saved.name ||
-            saved.user?.name ||
-            "Ezhilarasan";
-
-        profileName.textContent =
-            userName;
-
-        const letter =
-            userName
-                .trim()
-                .charAt(0)
-                .toUpperCase() || "E";
-
-        profileAvatar.textContent =
-            letter;
-
-        headerAvatar.textContent =
-            letter;
+    if (currentUserEmail) {
+        return currentUserEmail
+            .split("@")[0]
+            .replace(/[._-]+/g, " ")
+            .replace(/\b\w/g, c => c.toUpperCase());
     }
 
-}catch(e){}
+    return "User";
+}
+
+function updateUserUI() {
+
+    const userName = getLoggedInUserName();
+
+    if (profileName) {
+        profileName.textContent = userName;
+    }
+
+    const heroName =
+        document.getElementById("heroUserName");
+
+    if (heroName) {
+        heroName.textContent = userName;
+    }
+
+    const letter =
+        userName.trim().charAt(0).toUpperCase() || "U";
+
+    if (profileAvatar) {
+        profileAvatar.textContent = letter;
+    }
+
+    if (headerAvatar) {
+        headerAvatar.textContent = letter;
+    }
+}
+
+updateUserUI();
 
 /* =========================================================
    CHAT PERSISTENCE + LANGUAGE
@@ -2158,7 +2201,7 @@ function showWelcome(){
             </div>
 
             <h1>
-                Hello, User
+                Hello, <span id="heroUserName">User</span>
             </h1>
 
             <div class="welcome-sub">
@@ -2220,6 +2263,10 @@ function showWelcome(){
     `;
 
     attachSuggestions();
+
+    // IMPORTANT: showWelcome() creates #heroUserName dynamically,
+    // so update the name AFTER the welcome HTML is inserted.
+    updateUserUI();
 }
 
 /* =========================================================
