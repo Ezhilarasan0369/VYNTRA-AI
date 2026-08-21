@@ -1548,6 +1548,72 @@ body{
 #recentChats{display:flex;flex-direction:column;gap:2px}
 .recent-item.active{background:#25283a;border-color:#34384b}
 .recent-item span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ===== VYNTRA AI ADDITIONS ===== */
+body.light{background:#f6f7fb;color:#111318}
+body.light .app{background:radial-gradient(circle at 75% -10%,rgba(91,67,180,.08),transparent 32%),#f6f7fb}
+body.light .sidebar{background:linear-gradient(180deg,#fff 0%,#f5f6fa 100%);border-right-color:#dfe2e9}
+body.light .new-chat{background:#f7f8fb;border-color:#d9dce5;color:#15171c}
+body.light .new-chat:hover,body.light .recent-item:hover,body.light .sidebar-link:hover{background:#eceef4;color:#111318}
+body.light .search-box{background:#f1f3f7;border-color:#dfe2e9}
+body.light .search-box input{color:#16181d}
+body.light .recent-item,body.light .sidebar-link{color:#30333b}
+body.light .recent-item.active{background:#e9ebf7}
+body.light .sidebar-divider{background:#dfe2e9}
+body.light .profile{background:#f1f3f7;border-color:#dfe2e9}
+body.light .header{background:rgba(246,247,251,.88);border-bottom-color:#dfe2e9}
+body.light .refresh-btn{background:#fff;border-color:#dfe2e9;color:#30333b}
+body.light .refresh-btn:hover{background:#eceef4}
+body.light .welcome-sub{color:#737784}
+body.light .suggestion{background:linear-gradient(145deg,#fff,#f6f7fa);border-color:#dfe2e9;color:#202229}
+body.light .suggestion:hover{background:#f7f8fc;border-color:#cfd4df}
+body.light .suggestion-icon{background:#eef0f6}
+body.light .ai-content{color:#24262c}
+body.light .ai-content h1,body.light .ai-content h2,body.light .ai-content h3,body.light .ai-content strong{color:#111318}
+body.light .user-bubble{background:#e8eaf0;border-color:#d7dae3;color:#17191d}
+body.light .inline-code{background:#eef0f5;border-color:#d9dce5;color:#6d35b7}
+body.light .response-action{background:#fff;border-color:#d8dbe4;color:#5e626d}
+body.light .response-action:hover{background:#eef0f5;color:#111318}
+body.light .error-card{background:#fff;border-color:#d9dce5}
+body.light .error-title{color:#202229}
+body.light .error-text{color:#737784}
+body.light .error-retry{background:#eef0f5;border-color:#d8dbe4;color:#30333b}
+body.light .error-retry:hover{background:#e4e7ee}
+body.light .scroll-down{background:#fff;border-color:#d6dae3;color:#252830}
+body.light .scroll-down:hover{background:#eceef4}
+body.light .composer-wrap{background:linear-gradient(to top,#f6f7fb 55%,rgba(246,247,251,.94) 80%,transparent)}
+body.light .composer{background:#fff;border-color:#d6dae3}
+body.light .icon-btn{color:#626773}
+body.light .icon-btn:hover{background:#eceef4;color:#202229}
+body.light .send-btn{background:#dfe2e9;color:#777b86}
+body.light .send-btn.active{background:#202229;color:#fff}
+body.light .chat-area::-webkit-scrollbar-thumb{background:#cfd3dc}
+body.light .chat-area::-webkit-scrollbar-thumb:hover{background:#b8bdc8}
+.vyntra-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.62);backdrop-filter:blur(8px);z-index:100}
+.vyntra-modal.show{display:flex}
+.vyntra-modal-card{width:min(560px,100%);max-height:90vh;overflow:auto;padding:28px;border:1px solid #30333c;border-radius:22px;background:#17191f;color:#f5f5f7;box-shadow:0 25px 80px rgba(0,0,0,.45)}
+.vyntra-modal-card h2{font-size:25px;margin-bottom:5px}
+.vyntra-modal-sub{color:#92959e;font-size:14px;margin-bottom:22px}
+.vyntra-modal-close{float:right;width:42px;height:42px;border:1px solid #30333c;border-radius:12px;background:#202229;color:#eee;cursor:pointer;font-size:20px}
+.vyntra-modal-close:hover{background:#2a2c34}
+.settings-option{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-bottom:1px solid #292c34}
+.settings-label strong{display:block;font-size:15px}.settings-label span{display:block;color:#888c98;font-size:12px;margin-top:3px}
+.settings-buttons{display:flex;gap:7px}.settings-choice,.logout-btn,.help-chip{border:1px solid #343740;background:#202229;color:#dddfe5;border-radius:10px;padding:9px 12px;cursor:pointer}
+.settings-choice:hover,.help-chip:hover{background:#2b2e36}.settings-choice.active,.help-chip.active{background:#7050ff;border-color:#8065ff;color:#fff}
+.logout-btn{background:#3a2025;border-color:#633039;color:#ffb0b7}.logout-btn:hover{background:#4b252c}
+.help-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.help-textarea{width:100%;min-height:150px;resize:vertical;border:1px solid #343740;border-radius:14px;outline:none;padding:14px;background:#0f1116;color:#f3f4f6;font:inherit;line-height:1.5}
+.help-textarea:focus{border-color:#725bff}.help-status{min-height:22px;margin-top:10px;font-size:13px}.help-status.error{color:#ff727d}.help-status.success{color:#4ee58b}
+.help-submit{width:100%;margin-top:10px;padding:13px;border:0;border-radius:12px;background:linear-gradient(90deg,#5b7cff,#a238ff);color:#fff;font-weight:700;cursor:pointer}
+.activity-list{display:flex;flex-direction:column;gap:8px}.activity-entry{padding:13px 14px;border:1px solid #2d3038;border-radius:13px;background:#111319;cursor:pointer}.activity-entry:hover{background:#1d2027}
+.activity-entry strong{display:block;font-size:14px;margin-bottom:4px}.activity-entry span{color:#858995;font-size:11px}.activity-empty{padding:30px 10px;text-align:center;color:#888c98}
+body.light .vyntra-modal{background:rgba(20,22,28,.35)}
+body.light .vyntra-modal-card{background:#fff;color:#17191d;border-color:#dfe2e9;box-shadow:0 25px 80px rgba(0,0,0,.18)}
+body.light .vyntra-modal-sub{color:#737784}body.light .vyntra-modal-close{background:#f0f2f6;border-color:#d9dce5;color:#30333b}
+body.light .settings-option{border-bottom-color:#e3e5eb}body.light .settings-choice,body.light .help-chip{background:#f0f2f6;border-color:#d9dce5;color:#343741}
+body.light .settings-choice:hover,body.light .help-chip:hover{background:#e5e8ee}body.light .help-textarea{background:#f7f8fa;border-color:#d9dce5;color:#17191d}
+body.light .activity-entry{background:#f7f8fa;border-color:#dfe2e9}body.light .activity-entry:hover{background:#eef0f5}
+
 </style>
 </head>
 
@@ -1584,7 +1650,7 @@ body{
         <input
             id="searchInput"
             type="text"
-            placeholder="Search conversations..."
+            placeholder="Search activity..."
         >
 
     </div>
@@ -1604,17 +1670,17 @@ body{
 
         <div class="sidebar-divider"></div>
 
-        <div class="sidebar-link">
+        <div class="sidebar-link" id="helpBtn">
             <span>?</span>
             <span>Help</span>
         </div>
 
-        <div class="sidebar-link">
+        <div class="sidebar-link" id="activityBtn">
             <span>◷</span>
             <span>Activity</span>
         </div>
 
-        <div class="sidebar-link">
+        <div class="sidebar-link" id="settingsBtn">
             <span>⚙</span>
             <span>Settings</span>
         </div>
@@ -1642,6 +1708,34 @@ body{
 </aside>
 
 <div class="overlay" id="overlay"></div>
+
+
+<div class="vyntra-modal" id="settingsModal">
+  <div class="vyntra-modal-card">
+    <button class="vyntra-modal-close" data-close="settingsModal">×</button>
+    <h2>Settings</h2><div class="vyntra-modal-sub">Customize your VYNTRA AI experience.</div>
+    <div class="settings-option"><div class="settings-label"><strong>Appearance</strong><span>Choose light or dark mode.</span></div><div class="settings-buttons"><button class="settings-choice" id="darkModeBtn">Dark</button><button class="settings-choice" id="lightModeBtn">Light</button></div></div>
+    <div class="settings-option" style="border-bottom:0"><div class="settings-label"><strong>Account</strong><span>Sign out from this account.</span></div><button class="logout-btn" id="logoutBtn">Logout</button></div>
+  </div>
+</div>
+<div class="vyntra-modal" id="helpModal">
+  <div class="vyntra-modal-card">
+    <button class="vyntra-modal-close" data-close="helpModal">×</button>
+    <h2>Help & Suggestions</h2><div class="vyntra-modal-sub">Tell me what you want to improve.</div>
+    <div class="help-chips"><button class="help-chip active" data-cat="Improve responses">Improve responses</button><button class="help-chip" data-cat="Suggest a feature">Suggest a feature</button><button class="help-chip" data-cat="Report a problem">Report a problem</button><button class="help-chip" data-cat="UI feedback">UI feedback</button></div>
+    <label style="display:block;margin-bottom:8px;font-size:14px;color:#b9bcc5">Your suggestion</label>
+    <textarea class="help-textarea" id="helpTextarea" placeholder="Tell VYNTRA AI admin what you want to improve..."></textarea>
+    <div class="help-status" id="helpStatus"></div><button class="help-submit" id="helpSubmit">Send Suggestion</button>
+    <div style="text-align:center;margin-top:12px;color:#777b86;font-size:12px">Your suggestion will be sent to the VYNTRA AI admin email.</div>
+  </div>
+</div>
+<div class="vyntra-modal" id="activityModal">
+  <div class="vyntra-modal-card">
+    <button class="vyntra-modal-close" data-close="activityModal">×</button>
+    <h2>Activity</h2><div class="vyntra-modal-sub">Your conversations and searches on this account.</div>
+    <div class="activity-list" id="activityList"></div>
+  </div>
+</div>
 
 <!-- =====================================================
      MAIN
@@ -1970,34 +2064,13 @@ let selectedImage = null;
 
 let conversation = [];
 
-/* =========================================================
-   LOGGED-IN USER + USER-SPECIFIC CHAT STORAGE
-========================================================= */
-let loggedInUser = null;
-let currentUserEmail = "";
-
-try {
-    loggedInUser = JSON.parse(
-        localStorage.getItem("vyntraUser") || "null"
-    );
-} catch (e) {
-    loggedInUser = null;
-}
-
-currentUserEmail = String(
-    loggedInUser?.email ||
-    loggedInUser?.user?.email ||
-    loggedInUser?.profile?.email ||
-    ""
-).trim().toLowerCase();
-
-if (!currentUserEmail) {
-    window.location.href = "index.html";
-}
-
-const USER_STORAGE_ID = encodeURIComponent(currentUserEmail);
-const CHAT_STORAGE_KEY = "vyntraChats:" + USER_STORAGE_ID;
-const ACTIVE_CHAT_KEY = "vyntraActiveChat:" + USER_STORAGE_ID;
+/* Persistent chat history */
+let __vyntraStoredUser = null;
+try{ __vyntraStoredUser = JSON.parse(localStorage.getItem("vyntraUser") || "null"); }catch(e){}
+const __vyntraEmail = String(__vyntraStoredUser?.email || __vyntraStoredUser?.user?.email || __vyntraStoredUser?.profile?.email || "guest").trim().toLowerCase();
+const __vyntraUserKey = (__vyntraEmail.replace(/[^a-z0-9._-]/gi,"_") || "guest");
+const CHAT_STORAGE_KEY = "vyntraChats_" + __vyntraUserKey;
+const ACTIVE_CHAT_KEY = "vyntraActiveChat_" + __vyntraUserKey;
 let currentChatId = null;
 let chatStore = loadChatStore();
 let languageMode = "english";
@@ -2006,55 +2079,37 @@ let languageMode = "english";
    USER INFO
 ========================================================= */
 
-function getLoggedInUserName() {
+try{
 
-    let name = String(
-        loggedInUser?.name ||
-        loggedInUser?.user?.name ||
-        loggedInUser?.profile?.name ||
-        ""
-    ).trim();
+    const saved =
+        JSON.parse(
+            localStorage.getItem("vyntraUser") || "null"
+        );
 
-    if (name) return name;
+    if(saved){
 
-    if (currentUserEmail) {
-        return currentUserEmail
-            .split("@")[0]
-            .replace(/[._-]+/g, " ")
-            .replace(/\b\w/g, c => c.toUpperCase());
+        const userName =
+            saved.name ||
+            saved.user?.name ||
+            "Ezhilarasan";
+
+        profileName.textContent =
+            userName;
+
+        const letter =
+            userName
+                .trim()
+                .charAt(0)
+                .toUpperCase() || "E";
+
+        profileAvatar.textContent =
+            letter;
+
+        headerAvatar.textContent =
+            letter;
     }
 
-    return "User";
-}
-
-function updateUserUI() {
-
-    const userName = getLoggedInUserName();
-
-    if (profileName) {
-        profileName.textContent = userName;
-    }
-
-    const heroName =
-        document.getElementById("heroUserName");
-
-    if (heroName) {
-        heroName.textContent = userName;
-    }
-
-    const letter =
-        userName.trim().charAt(0).toUpperCase() || "U";
-
-    if (profileAvatar) {
-        profileAvatar.textContent = letter;
-    }
-
-    if (headerAvatar) {
-        headerAvatar.textContent = letter;
-    }
-}
-
-updateUserUI();
+}catch(e){}
 
 /* =========================================================
    CHAT PERSISTENCE + LANGUAGE
@@ -2132,20 +2187,7 @@ function saveCurrentChat(){
 
 function renderRecentChats(){
     const box = document.getElementById("recentChats");
-    if(!box) return;
-    box.innerHTML = "";
-    chatStore
-        .slice()
-        .sort((a,b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))
-        .slice(0, 30)
-        .forEach(chat => {
-            const item = document.createElement("div");
-            item.className = "recent-item" + (chat.id === currentChatId ? " active" : "");
-            item.dataset.chatId = chat.id;
-            item.innerHTML = `<span class="recent-icon">◌</span><span>${escapeHTML(chat.title || "Conversation")}</span>`;
-            item.addEventListener("click", () => loadChat(chat.id));
-            box.appendChild(item);
-        });
+    if(box) box.innerHTML = "";
 }
 
 function loadChat(id){
@@ -2201,7 +2243,7 @@ function showWelcome(){
             </div>
 
             <h1>
-                Hello, <span id="heroUserName">User</span>
+                Hello, <span id="welcomeName">User</span>
             </h1>
 
             <div class="welcome-sub">
@@ -2263,10 +2305,6 @@ function showWelcome(){
     `;
 
     attachSuggestions();
-
-    // IMPORTANT: showWelcome() creates #heroUserName dynamically,
-    // so update the name AFTER the welcome HTML is inserted.
-    updateUserUI();
 }
 
 /* =========================================================
@@ -3694,6 +3732,126 @@ updateSendButton();
 
 updateScrollButton();
 
+</script>
+
+
+<script>
+/* =========================================================
+   VYNTRA AI FINAL UI CONTROLLER
+========================================================= */
+(function(){
+  const user = (()=>{ try{return JSON.parse(localStorage.getItem("vyntraUser")||"null")}catch(e){return null} })();
+  const email = String(user?.email || user?.user?.email || user?.profile?.email || "guest").trim().toLowerCase();
+  const userKey = email.replace(/[^a-z0-9._-]/gi,"_") || "guest";
+  const userName = String(user?.name || user?.user?.name || user?.profile?.name || "User").trim() || "User";
+  const userChatKey = "vyntraChats_" + userKey;
+  const userActiveKey = "vyntraActiveChat_" + userKey;
+  const themeKey = "vyntraTheme_" + userKey;
+
+  /* Move the current account's chats into its own storage namespace. */
+  try{
+    if(!localStorage.getItem(userChatKey)){
+      const old = localStorage.getItem("vyntraChats");
+      if(old) localStorage.setItem(userChatKey, old);
+    }
+    if(!localStorage.getItem(userActiveKey)){
+      const oldActive = localStorage.getItem("vyntraActiveChat");
+      if(oldActive) localStorage.setItem(userActiveKey, oldActive);
+    }
+  }catch(e){}
+
+  function getStore(){
+    try{ const x=JSON.parse(localStorage.getItem(userChatKey)||"[]"); return Array.isArray(x)?x:[]; }
+    catch(e){ return []; }
+  }
+  function saveStore(store){
+    try{ localStorage.setItem(userChatKey,JSON.stringify(store)); }catch(e){}
+  }
+
+  /* Replace the global in-memory store before the next save/load operation. */
+  try{
+    chatStore = getStore();
+    currentChatId = localStorage.getItem(userActiveKey) || null;
+  }catch(e){}
+
+  /* Personalized welcome. */
+  const welcome = document.getElementById("welcomeName");
+  if(welcome) welcome.textContent = userName;
+  const pn=document.getElementById("profileName"); if(pn) pn.textContent=userName;
+  const letter=(userName.charAt(0)||"U").toUpperCase();
+  const pa=document.getElementById("profileAvatar"); if(pa) pa.textContent=letter;
+  const ha=document.getElementById("headerAvatar"); if(ha) ha.textContent=letter;
+
+  /* Settings */
+  const settingsModal=document.getElementById("settingsModal");
+  const helpModal=document.getElementById("helpModal");
+  const activityModal=document.getElementById("activityModal");
+  const open=(m)=>m&&m.classList.add("show");
+  const close=(m)=>m&&m.classList.remove("show");
+  document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>close(document.getElementById(b.dataset.close)));
+  [settingsModal,helpModal,activityModal].forEach(m=>{if(m)m.onclick=e=>{if(e.target===m)close(m)}});
+
+  function theme(){return localStorage.getItem(themeKey)||"dark"}
+  function applyTheme(t){document.body.classList.toggle("light",t==="light");localStorage.setItem(themeKey,t);updateThemeButtons()}
+  function updateThemeButtons(){
+    const t=theme();
+    document.getElementById("darkModeBtn")?.classList.toggle("active",t!=="light");
+    document.getElementById("lightModeBtn")?.classList.toggle("active",t==="light");
+  }
+  document.getElementById("settingsBtn")?.addEventListener("click",()=>{updateThemeButtons();open(settingsModal);closeMobileSidebar()});
+  document.getElementById("darkModeBtn")?.addEventListener("click",()=>applyTheme("dark"));
+  document.getElementById("lightModeBtn")?.addEventListener("click",()=>applyTheme("light"));
+  document.getElementById("logoutBtn")?.addEventListener("click",()=>{localStorage.removeItem("vyntraUser");localStorage.removeItem(userActiveKey);location.href="index.html"});
+  applyTheme(theme());
+
+  /* Activity */
+  function activityDate(v){try{return new Date(v).toLocaleString([],{dateStyle:"medium",timeStyle:"short"})}catch(e){return v||"Unknown time"}}
+  function renderActivity(q=""){
+    const box=document.getElementById("activityList"); if(!box)return;
+    const query=String(q).toLowerCase().trim();
+    const list=getStore().slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0)).filter(c=>{
+      if(!query)return true;
+      return String(c.title||"").toLowerCase().includes(query)||(c.messages||[]).some(m=>String(m.content||"").toLowerCase().includes(query));
+    });
+    box.innerHTML="";
+    if(!list.length){box.innerHTML='<div class="activity-empty">No activity found.</div>';return}
+    list.slice(0,50).forEach(c=>{
+      const el=document.createElement("div");el.className="activity-entry";
+      el.innerHTML='<strong>'+escapeHTML(c.title||"Conversation")+'</strong><span>'+activityDate(c.updatedAt)+'</span>';
+      el.onclick=()=>{close(activityModal);try{chatStore=getStore();loadChat(c.id)}catch(e){}};
+      box.appendChild(el);
+    });
+  }
+  document.getElementById("activityBtn")?.addEventListener("click",()=>{renderActivity();open(activityModal);closeMobileSidebar()});
+  document.getElementById("searchInput")?.addEventListener("input",e=>{const q=e.target.value.trim();if(q){renderActivity(q);open(activityModal)}});
+
+  /* Help */
+  let category="Improve responses";
+  document.querySelectorAll(".help-chip").forEach(b=>b.onclick=()=>{category=b.dataset.cat||"Suggestion";document.querySelectorAll(".help-chip").forEach(x=>x.classList.toggle("active",x===b))});
+  document.getElementById("helpBtn")?.addEventListener("click",()=>{document.getElementById("helpStatus").textContent="";open(helpModal);closeMobileSidebar()});
+  document.getElementById("helpSubmit")?.addEventListener("click",async()=>{
+    const ta=document.getElementById("helpTextarea"),st=document.getElementById("helpStatus"),btn=document.getElementById("helpSubmit"),text=ta.value.trim();
+    if(!text){st.className="help-status error";st.textContent="Please enter your suggestion.";return}
+    btn.disabled=true;btn.textContent="Sending...";st.className="help-status";st.textContent="";
+    try{
+      const r=await fetch(API_URL+"/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({category,suggestion:text,email,name:userName})});
+      const raw=await r.text();let d={};try{d=JSON.parse(raw)}catch(e){}
+      if(!r.ok)throw new Error(d?.error||d?.message||"Could not send suggestion.");
+      st.className="help-status success";st.textContent="Suggestion sent successfully. Thank you!";ta.value="";
+    }catch(e){st.className="help-status error";st.textContent=e?.message||"Could not send suggestion. Please try again."}
+    finally{btn.disabled=false;btn.textContent="Send Suggestion"}
+  });
+
+  /* On first load, restore only this user's activity. */
+  try{
+    chatStore=getStore();
+    const active=localStorage.getItem(userActiveKey);
+    messages.innerHTML="";
+    if(active && chatStore.some(c=>c.id===active)) loadChat(active); else showWelcome();
+  }catch(e){showWelcome()}
+  if(typeof renderRecentChats==="function")renderRecentChats();
+  renderActivity();
+})();
 </script>
 
 </body>
