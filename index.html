@@ -4,190 +4,1139 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VYNTRA AI</title>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#080b14;color:#f7f8ff;min-height:100vh;display:grid;place-items:center}
-.bg{position:fixed;inset:0;background:radial-gradient(circle at 50% 10%,#39206d 0,#12162b 35%,#080b14 72%);z-index:-1}
-.card{width:min(460px,92vw);padding:34px;border:1px solid #30364d;border-radius:28px;background:rgba(18,22,38,.9);box-shadow:0 25px 80px rgba(0,0,0,.45)}
-.logo{width:68px;height:68px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(135deg,#6d4aff,#8f5cff);font-size:34px;font-weight:800;margin:auto}
-h1{text-align:center;margin:16px 0 4px;font-size:30px}.sub{text-align:center;color:#aeb6cc;margin-bottom:26px}
-input{width:100%;padding:15px 16px;margin:7px 0;border:1px solid #353b53;border-radius:14px;background:#101423;color:#fff;font-size:15px;outline:none}
-input:focus{border-color:#7657ff}.btn{width:100%;border:0;border-radius:14px;padding:15px;margin-top:10px;font-weight:700;font-size:15px;cursor:pointer}
-.primary{background:#f5f6fa;color:#111}.secondary{background:#252b40;color:#fff}.link{color:#9d8aff;cursor:pointer;text-align:center;margin-top:18px}
-.divider{display:flex;align-items:center;gap:12px;color:#727b92;margin:20px 0}.divider:before,.divider:after{content:"";height:1px;background:#30364a;flex:1}
-#googleBtn{display:flex;justify-content:center;min-height:44px}.msg{min-height:22px;margin-top:14px;text-align:center;color:#ff9f9f}.ok{color:#75e6a5}
-.small{text-align:center;color:#737c92;font-size:13px;margin-top:18px}.hidden{display:none}
-</style>
-</head>
-<body>
-<div class="bg"></div>
-<div class="card">
-  <div class="logo">V</div>
-  <h1>VYNTRA AI</h1>
-  <div class="sub">Secure access to your AI assistant</div>
-
-  <section id="loginView">
-    <div id="googleBtn"></div>
-    <div class="divider">OR</div>
-    <input id="identifier" placeholder="Email or Mobile Number" autocomplete="username">
-    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-    <button class="btn primary" onclick="login()">Sign In</button>
-    <div class="link" onclick="showSignup()">Don't have an account? Create Account</div>
-  </section>
-
-  <section id="signupView" class="hidden">
-    <input id="name" placeholder="Full Name">
-    <input id="email" type="email" placeholder="Email Address">
-    <input id="mobile" inputmode="numeric" placeholder="10-digit Mobile Number">
-    <input id="signupPassword" type="password" placeholder="Create Password (8+ characters)">
-    <button class="btn primary" onclick="signup()">Request Access</button>
-    <div class="link" onclick="showLogin()">Already have an account? Sign In</div>
-  </section>
-
-  <div id="msg" class="msg"></div>
-  <div class="small">Only approved users can access VYNTRA AI.</div>
-  <div class="small">Admin? <a href="admin.html" style="color:#9d8aff">Admin Login</a></div>
-</div>
-
-<script>
-const API_URL = "https://vyntra-ai-api.ezhilarasanpofficial.workers.dev";
-const GOOGLE_CLIENT_ID = "987653531209-fo7pihl6082a6ibts8utnf2fdkqnqc4a.apps.googleusercontent.com";
-
-const $ = id => document.getElementById(id);
-function message(text, ok=false){$("msg").textContent=text;$("msg").className="msg"+(ok?" ok":"");}
-
-function showSignup(){
-  $("loginView").classList.add("hidden");
-  $("signupView").classList.remove("hidden");
-  message("");
-}
-function showLogin(){
-  $("signupView").classList.add("hidden");
-  $("loginView").classList.remove("hidden");
-  message("");
+*{
+  box-sizing:border-box;
 }
 
-async function post(path, body){
-  const r = await fetch(API_URL + path,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(body)
-  });
-  const data = await r.json().catch(()=>({}));
-  return {r,data};
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:#080b14;
+  color:#f7f8ff;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
 }
 
-async function signup(){
-  const name=$("name").value.trim(), email=$("email").value.trim(),
-        mobile=$("mobile").value.trim(), password=$("signupPassword").value;
-  if(!name||!email||!mobile||!password){message("Please fill all fields.");return}
-  message("Submitting access request...");
-  try{
-    const {r,data}=await post("/signup",{name,email,mobile,password});
-    if(data.success){
-      message(data.message || "Request submitted.",true);
-      setTimeout(showLogin,1200);
-    }else message(data.error || "Signup failed.");
-  }catch(e){message("Cannot connect to VYNTRA AI API.")}
+.bg{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 10%,#39206d 0,#12162b 35%,#080b14 72%);
+  z-index:-1;
 }
 
-async function login(){
-  const identifier=$("identifier").value.trim(), password=$("password").value;
-  if(!identifier||!password){message("Enter email/mobile and password.");return}
-  message("Signing in...");
-  try{
-    const {data}=await post("/login",{identifier,password});
-    if(data.success){
-      localStorage.setItem("vyntraUser",JSON.stringify(data));
-      localStorage.removeItem("vyntra_user");
-      message("Login successful. Opening VYNTRA AI...",true);
-      // Change this to your actual chat page if it has another filename.
-      setTimeout(()=>location.href="chat.html",500);
-    }else message(data.error || "Login failed.");
-  }catch(e){message("Cannot connect to VYNTRA AI API.")}
+.card{
+  width:min(460px,92vw);
+  padding:34px;
+  border:1px solid #30364d;
+  border-radius:28px;
+  background:rgba(18,22,38,.9);
+  box-shadow:0 25px 80px rgba(0,0,0,.45);
 }
 
-function initGoogle(){
-  if(!window.google || !window.google.accounts || !window.google.accounts.id){
-    return setTimeout(initGoogle,500);
+.logo{
+  width:68px;
+  height:68px;
+  border-radius:20px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#6d4aff,#8f5cff);
+  font-size:34px;
+  font-weight:800;
+  margin:auto;
+}
+
+h1{
+  text-align:center;
+  margin:16px 0 4px;
+  font-size:30px;
+}
+
+.sub{
+  text-align:center;
+  color:#aeb6cc;
+  margin-bottom:26px;
+}
+
+input{
+  width:100%;
+  padding:15px 16px;
+  margin:7px 0;
+  border:1px solid #353b53;
+  border-radius:14px;
+  background:#101423;
+  color:#fff;
+  font-size:15px;
+  outline:none;
+}
+
+input:focus{
+  border-color:#7657ff;
+}
+
+.btn{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:15px;
+  margin-top:10px;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.primary{
+  background:#f5f6fa;
+  color:#111;
+}
+
+.secondary{
+  background:#252b40;
+  color:#fff;
+}
+
+.link{
+  color:#9d8aff;
+  cursor:pointer;
+  text-align:center;
+  margin-top:18px;
+}
+
+.divider{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:#727b92;
+  margin:20px 0;
+}
+
+.divider:before,
+.divider:after{
+  content:"";
+  height:1px;
+  background:#30364a;
+  flex:1;
+}
+
+#googleBtn{
+  display:flex;
+  justify-content:center;
+  min-height:44px;
+}
+
+.msg{
+  min-height:22px;
+  margin-top:14px;
+  text-align:center;
+  color:#ff9f9f;
+  line-height:1.5;
+}
+
+.ok{
+  color:#75e6a5;
+}
+
+.warn{
+  color:#ffd166;
+}
+
+.small{
+  text-align:center;
+  color:#737c92;
+  font-size:13px;
+  margin-top:18px;
+}
+
+.hidden{
+  display:none;
+}
+
+.status-box{
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:12px;
+  font-size:13px;
+  line-height:1.5;
+  display:none;
+}
+
+.status-success{
+  display:block;
+  color:#86efac;
+  background:rgba(34,197,94,.08);
+  border:1px solid rgba(34,197,94,.18);
+}
+
+.status-warning{
+  display:block;
+  color:#fbbf24;
+  background:rgba(245,158,11,.08);
+  border:1px solid rgba(245,158,11,.18);
+}
+
+.status-error{
+  display:block;
+  color:#fca5a5;
+  background:rgba(239,68,68,.08);
+  border:1px solid rgba(239,68,68,.18);
+}
+
+@media(max-width:500px){
+  .card{
+    padding:26px 20px;
   }
 
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: handleGoogle,
-    auto_select: false,
-    cancel_on_tap_outside: true
-  });
+  h1{
+    font-size:27px;
+  }
+}
+</style>
+</head>
 
-  google.accounts.id.renderButton($("googleBtn"),{
-    theme:"outline",
-    size:"large",
-    width:360,
-    text:"continue_with",
-    shape:"pill"
-  });
+<body>
+
+<div class="bg"></div>
+
+<div class="card">
+
+  <div class="logo">V</div>
+
+  <h1>VYNTRA AI</h1>
+
+  <div class="sub">
+    Secure access to your AI assistant
+  </div>
+
+
+  <!-- =====================================================
+       LOGIN VIEW
+  ====================================================== -->
+
+  <section id="loginView">
+
+    <div id="googleBtn"></div>
+
+    <div class="divider">
+      OR
+    </div>
+
+    <input
+      id="identifier"
+      placeholder="Email or Mobile Number"
+      autocomplete="username"
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button
+      id="loginButton"
+      class="btn primary"
+      onclick="login()"
+    >
+      Sign In
+    </button>
+
+    <div
+      class="link"
+      onclick="showSignup()"
+    >
+      Don't have an account? Create Account
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       SIGNUP VIEW
+  ====================================================== -->
+
+  <section
+    id="signupView"
+    class="hidden"
+  >
+
+    <input
+      id="name"
+      placeholder="Full Name"
+      autocomplete="name"
+    >
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Email Address"
+      autocomplete="email"
+    >
+
+    <input
+      id="mobile"
+      inputmode="numeric"
+      maxlength="10"
+      placeholder="10-digit Mobile Number"
+      autocomplete="tel"
+    >
+
+    <input
+      id="signupPassword"
+      type="password"
+      placeholder="Create Password (8+ characters)"
+      autocomplete="new-password"
+    >
+
+    <button
+      id="signupButton"
+      class="btn primary"
+      onclick="signup()"
+    >
+      Request Access
+    </button>
+
+    <div
+      class="link"
+      onclick="showLogin()"
+    >
+      Already have an account? Sign In
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       MESSAGE
+  ====================================================== -->
+
+  <div
+    id="msg"
+    class="msg"
+  ></div>
+
+
+  <!-- =====================================================
+       EMAIL STATUS
+  ====================================================== -->
+
+  <div
+    id="emailStatus"
+    class="status-box"
+  ></div>
+
+
+  <div class="small">
+    Only approved users can access VYNTRA AI.
+  </div>
+
+  <div class="small">
+    Admin?
+    <a
+      href="admin.html"
+      style="color:#9d8aff"
+    >
+      Admin Login
+    </a>
+  </div>
+
+</div>
+
+
+<script>
+
+const API_URL =
+  "https://vyntra-ai-api.ezhilarasanpofficial.workers.dev";
+
+const GOOGLE_CLIENT_ID =
+  "987653531209-fo7pihl6082a6ibts8utnf2fdkqnqc4a.apps.googleusercontent.com";
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ = id =>
+  document.getElementById(id);
+
+
+function message(
+  text,
+  ok = false,
+  warning = false
+){
+
+  $("msg").textContent = text;
+
+  $("msg").className =
+    "msg" +
+    (
+      ok
+        ? " ok"
+        : warning
+          ? " warn"
+          : ""
+    );
 }
 
-async function handleGoogle(response){
-  message("Checking Google account...");
+
+function clearEmailStatus(){
+
+  const box =
+    $("emailStatus");
+
+  box.textContent = "";
+
+  box.className =
+    "status-box";
+}
+
+
+function showEmailStatus(
+  text,
+  type = "success"
+){
+
+  const box =
+    $("emailStatus");
+
+  box.textContent = text;
+
+  box.className =
+    "status-box " +
+    (
+      type === "success"
+        ? "status-success"
+        : type === "warning"
+          ? "status-warning"
+          : "status-error"
+    );
+}
+
+
+function showSignup(){
+
+  $("loginView")
+    .classList
+    .add("hidden");
+
+  $("signupView")
+    .classList
+    .remove("hidden");
+
+  message("");
+
+  clearEmailStatus();
+}
+
+
+function showLogin(){
+
+  $("signupView")
+    .classList
+    .add("hidden");
+
+  $("loginView")
+    .classList
+    .remove("hidden");
+
+  message("");
+
+  clearEmailStatus();
+}
+
+
+/* =========================================================
+   API POST
+========================================================= */
+
+async function post(
+  path,
+  body
+){
+
+  const response =
+    await fetch(
+      API_URL + path,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify(body)
+      }
+    );
+
+  const data =
+    await response
+      .json()
+      .catch(() => ({}));
+
+  return {
+    response,
+    data
+  };
+}
+
+
+/* =========================================================
+   SIGNUP / REQUEST ACCESS
+========================================================= */
+
+async function signup(){
+
+  const name =
+    $("name")
+      .value
+      .trim();
+
+  const email =
+    $("email")
+      .value
+      .trim();
+
+  const mobile =
+    $("mobile")
+      .value
+      .trim();
+
+  const password =
+    $("signupPassword")
+      .value;
+
+
+  clearEmailStatus();
+
+
+  if(
+    !name ||
+    !email ||
+    !mobile ||
+    !password
+  ){
+
+    message(
+      "Please fill all fields."
+    );
+
+    return;
+  }
+
+
+  if(
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      .test(email)
+  ){
+
+    message(
+      "Enter a valid email address."
+    );
+
+    return;
+  }
+
+
+  if(
+    !/^\d{10}$/.test(mobile)
+  ){
+
+    message(
+      "Enter a valid 10-digit mobile number."
+    );
+
+    return;
+  }
+
+
+  if(
+    password.length < 8
+  ){
+
+    message(
+      "Password must be at least 8 characters."
+    );
+
+    return;
+  }
+
+
+  const button =
+    $("signupButton");
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Submitting...";
+
+
+  message(
+    "Submitting access request..."
+  );
+
 
   try{
 
-    if(!response || !response.credential){
-      message("Google sign-in did not return a credential.");
+    const {
+      response,
+      data
+    } =
+      await post(
+        "/signup",
+        {
+          name,
+          email,
+          mobile,
+          password
+        }
+      );
+
+
+    console.log(
+      "SIGNUP HTTP STATUS:",
+      response.status
+    );
+
+    console.log(
+      "SIGNUP RESPONSE:",
+      data
+    );
+
+
+    /* -----------------------------------------
+       SUCCESS
+    ------------------------------------------ */
+
+    if(data.success){
+
+      message(
+        data.message ||
+        "Access request submitted.",
+        true
+      );
+
+
+      /* ---------------------------------------
+         EMAIL SUCCESS
+      ---------------------------------------- */
+
+      if(
+        data.emailSent === true
+      ){
+
+        showEmailStatus(
+          "✓ Access request submitted successfully. Admin notification email sent.",
+          "success"
+        );
+
+      }
+
+
+      /* ---------------------------------------
+         EMAIL FAILED
+      ---------------------------------------- */
+
+      else if(
+        data.emailSent === false
+      ){
+
+        showEmailStatus(
+          "⚠ Access request was saved, but the admin notification email could not be sent.",
+          "warning"
+        );
+
+
+        console.error(
+          "ADMIN EMAIL ERROR:",
+          data.emailError
+        );
+
+      }
+
+
+      /* ---------------------------------------
+         BACKWARD COMPATIBILITY
+      ---------------------------------------- */
+
+      else{
+
+        showEmailStatus(
+          "Your access request has been submitted. Please wait for administrator approval.",
+          "success"
+        );
+
+      }
+
+
+      /*
+        IMPORTANT:
+        Don't immediately move back to login.
+        Keep the status visible so you can test.
+      */
+
       return;
     }
 
-    const {data}=await post("/google-auth",{
-      credential:response.credential
-    });
+
+    /* -----------------------------------------
+       SERVER ERROR
+    ------------------------------------------ */
+
+    message(
+      data.error ||
+      "Signup failed."
+    );
+
+
+    if(
+      data.emailError
+    ){
+
+      showEmailStatus(
+        data.emailError,
+        "error"
+      );
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "SIGNUP ERROR:",
+      error
+    );
+
+
+    message(
+      "Cannot connect to VYNTRA AI API."
+    );
+
+
+    showEmailStatus(
+      error?.message ||
+      "Unable to contact server.",
+      "error"
+    );
+
+
+  }finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "Request Access";
+  }
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function login(){
+
+  const identifier =
+    $("identifier")
+      .value
+      .trim();
+
+  const password =
+    $("password")
+      .value;
+
+
+  clearEmailStatus();
+
+
+  if(
+    !identifier ||
+    !password
+  ){
+
+    message(
+      "Enter email/mobile and password."
+    );
+
+    return;
+  }
+
+
+  const button =
+    $("loginButton");
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Signing In...";
+
+
+  message(
+    "Signing in..."
+  );
+
+
+  try{
+
+    const {
+      response,
+      data
+    } =
+      await post(
+        "/login",
+        {
+          identifier,
+          password
+        }
+      );
+
+
+    console.log(
+      "LOGIN RESPONSE:",
+      data
+    );
+
 
     if(data.success){
 
-      localStorage.setItem("vyntraUser",JSON.stringify(data));
-      localStorage.removeItem("vyntra_user");
+      localStorage.setItem(
+        "vyntraUser",
+        JSON.stringify(data)
+      );
+
+      localStorage.removeItem(
+        "vyntra_user"
+      );
+
+
+      message(
+        "Login successful. Opening VYNTRA AI...",
+        true
+      );
+
+
+      setTimeout(
+        () =>
+          location.href =
+            "chat.html",
+        500
+      );
+
+
+      return;
+    }
+
+
+    if(
+      data.status ===
+      "pending"
+    ){
+
+      message(
+        data.error ||
+        "Your access request is waiting for administrator approval.",
+        false,
+        true
+      );
+
+      return;
+    }
+
+
+    if(
+      data.status ===
+      "denied"
+    ){
+
+      message(
+        data.error ||
+        "Your access request was denied."
+      );
+
+      return;
+    }
+
+
+    message(
+      data.error ||
+      "Login failed."
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "LOGIN ERROR:",
+      error
+    );
+
+
+    message(
+      "Cannot connect to VYNTRA AI API."
+    );
+
+
+  }finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "Sign In";
+  }
+
+}
+
+
+/* =========================================================
+   GOOGLE LOGIN
+========================================================= */
+
+function initGoogle(){
+
+  if(
+    !window.google ||
+    !window.google.accounts ||
+    !window.google.accounts.id
+  ){
+
+    return setTimeout(
+      initGoogle,
+      500
+    );
+  }
+
+
+  google.accounts.id.initialize({
+
+    client_id:
+      GOOGLE_CLIENT_ID,
+
+    callback:
+      handleGoogle,
+
+    auto_select:
+      false,
+
+    cancel_on_tap_outside:
+      true
+
+  });
+
+
+  google.accounts.id.renderButton(
+
+    $("googleBtn"),
+
+    {
+      theme:
+        "outline",
+
+      size:
+        "large",
+
+      width:
+        360,
+
+      text:
+        "continue_with",
+
+      shape:
+        "pill"
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   GOOGLE AUTH HANDLER
+========================================================= */
+
+async function handleGoogle(
+  response
+){
+
+  clearEmailStatus();
+
+
+  message(
+    "Checking Google account..."
+  );
+
+
+  try{
+
+    if(
+      !response ||
+      !response.credential
+    ){
+
+      message(
+        "Google sign-in did not return a credential."
+      );
+
+      return;
+    }
+
+
+    const {
+      data
+    } =
+      await post(
+        "/google-auth",
+        {
+          credential:
+            response.credential
+        }
+      );
+
+
+    console.log(
+      "GOOGLE AUTH RESPONSE:",
+      data
+    );
+
+
+    /* -----------------------------------------
+       APPROVED
+    ------------------------------------------ */
+
+    if(data.success){
+
+      localStorage.setItem(
+        "vyntraUser",
+        JSON.stringify(data)
+      );
+
+      localStorage.removeItem(
+        "vyntra_user"
+      );
+
 
       message(
         "Google login successful. Opening VYNTRA AI...",
         true
       );
 
-      setTimeout(()=>location.href="chat.html",500);
+
+      setTimeout(
+        () =>
+          location.href =
+            "chat.html",
+        500
+      );
+
+
       return;
     }
 
-    if(data.status === "pending"){
+
+    /* -----------------------------------------
+       PENDING
+    ------------------------------------------ */
+
+    if(
+      data.status ===
+      "pending"
+    ){
+
       message(
         data.error ||
-        "Access request submitted. Please wait for administrator approval."
+        "Access request submitted. Please wait for administrator approval.",
+        false,
+        true
       );
+
+
+      showEmailStatus(
+        "Your access request is pending administrator approval.",
+        "warning"
+      );
+
+
       return;
     }
 
-    if(data.status === "denied"){
+
+    /* -----------------------------------------
+       DENIED
+    ------------------------------------------ */
+
+    if(
+      data.status ===
+      "denied"
+    ){
+
       message(
         data.error ||
         "Your access request was denied."
       );
+
+
+      showEmailStatus(
+        "Your access request was not approved.",
+        "error"
+      );
+
+
       return;
     }
+
 
     message(
       data.error ||
       "Google login failed."
     );
 
-  }catch(e){
 
-    console.error("Google login error:",e);
+  }catch(error){
+
+    console.error(
+      "Google login error:",
+      error
+    );
+
 
     message(
       "Cannot connect to VYNTRA AI API."
     );
 
   }
+
 }
-window.addEventListener("load",initGoogle);
+
+
+/* =========================================================
+   PAGE LOAD
+========================================================= */
+
+window.addEventListener(
+  "load",
+  () => {
+
+    initGoogle();
+
+  }
+);
+
 </script>
+
 </body>
 </html>
