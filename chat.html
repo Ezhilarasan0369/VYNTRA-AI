@@ -38,7 +38,7 @@ body{
 
 .app{
     width:100%;
-    height:100vh;
+    height:100dvh;
     display:flex;
     background:
         radial-gradient(
@@ -55,7 +55,7 @@ body{
 
 .sidebar{
     width:323px;
-    height:100vh;
+    height:100dvh;
 
     flex-shrink:0;
 
@@ -342,7 +342,7 @@ body{
 
     flex:1;
 
-    height:100vh;
+    height:100dvh;
 
     display:flex;
     flex-direction:column;
@@ -490,7 +490,7 @@ body{
 
     scroll-behavior:smooth;
 
-    padding:35px 30px 190px;
+    padding:35px 30px var(--composer-space, 150px);
 }
 
 .chat-area::-webkit-scrollbar{
@@ -1142,7 +1142,10 @@ body{
     bottom:0;
 
     padding:
-        15px 30px 10px;
+        15px 30px calc(10px + env(safe-area-inset-bottom, 0px));
+
+    padding-left:clamp(12px, 3vw, 30px);
+    padding-right:clamp(12px, 3vw, 30px);
 
     background:
         linear-gradient(
@@ -1453,12 +1456,12 @@ body{
 
     .chat-area{
         padding:
-            24px 16px 175px;
+            24px 16px var(--composer-space, 135px);
     }
 
     .composer-wrap{
         padding:
-            10px 12px 8px;
+            10px 12px calc(8px + env(safe-area-inset-bottom, 0px));
     }
 
     .composer{
@@ -1541,6 +1544,51 @@ body{
 
     #prompt{
         font-size:14px;
+    }
+}
+
+
+@media(max-width:600px){
+    .app, .sidebar, .main{
+        height:100dvh;
+    }
+
+    .header{
+        height:72px;
+        min-height:72px;
+    }
+
+    .chat-area{
+        padding-left:12px;
+        padding-right:12px;
+        padding-top:20px;
+    }
+
+    .messages{
+        width:100%;
+    }
+
+    .composer-wrap{
+        padding-left:10px;
+        padding-right:10px;
+    }
+
+    .composer{
+        width:100%;
+        min-height:58px;
+        border-radius:29px;
+        padding:8px 8px 8px 14px;
+    }
+
+    #prompt{
+        height:42px;
+        line-height:42px;
+        font-size:14px;
+    }
+
+    .icon-btn, .send-btn{
+        width:38px;
+        height:38px;
     }
 }
 
@@ -2055,6 +2103,8 @@ const headerAvatar =
 ========================================================= */
 
 let generating = false;
+let userScrolledUp = false;
+let lastScrollTop = 0;
 
 let controller = null;
 
@@ -2137,16 +2187,21 @@ function makeChatId(){
 }
 
 function detectLanguageStyle(text){
-    const value = String(text || "").toLowerCase();
+    const value = String(text || "").trim();
+
+    // VYNTRA AI supports two response languages only:
+    // Tamil script -> Tamil
+    // Everything else (including Tanglish) -> English
     if(/[\u0B80-\u0BFF]/.test(value)) return "tamil";
-    const tanglishWords = /\b(da|mapla|macha|bro|enna|epdi|eppdi|panna|pannu|pandrathu|pandren|iruku|irukku|venum|kudu|sollu|solla|apdi|ipdi|inga|anga|enga|yen|yaaru|na|nee|unaku|enaku|mathiri|madhiri|correct|crt|aagala|varla|varala|poguthu|pogudhu|thaan|than|nu|ah|la)\b/;
-    return tanglishWords.test(value) ? "tanglish" : "english";
+    return "english";
 }
 
 function languageInstruction(mode){
-    if(mode === "tamil") return "Reply in Tamil. Keep technical terms in English when useful. Do not randomly switch to Tanglish or English.";
-    if(mode === "tanglish") return "Reply in natural Tanglish (Tamil written mainly in English letters). Keep technical terms in English. Do not randomly switch to formal Tamil or full English.";
-    return "Reply in professional, clear English. Do not randomly switch to Tanglish or Tamil unless the user changes language/style.";
+    if(mode === "tamil") {
+        return "Reply entirely in Tamil. Keep technical terms, product names, commands, URLs and code in English when necessary. Do not reply in Tanglish.";
+    }
+
+    return "Reply entirely in clear English. If the user writes Tanglish, still reply in English. Do not reply in Tanglish or Tamil unless the user changes to Tamil script.";
 }
 
 function titleFromFirstMessage(text){
@@ -2187,7 +2242,35 @@ function saveCurrentChat(){
 
 function renderRecentChats(){
     const box = document.getElementById("recentChats");
-    if(box) box.innerHTML = "";
+    if(!box) return;
+
+    box.innerHTML = "";
+
+    const list = [...chatStore]
+        .sort((a,b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))
+        .slice(0, 20);
+
+    list.forEach(chat => {
+        const item = document.createElement("div");
+        item.className = "recent-item" + (chat.id === currentChatId ? " active" : "");
+        item.dataset.chatId = chat.id;
+
+        const icon = document.createElement("span");
+        icon.className = "recent-icon";
+        icon.textContent = "◌";
+
+        const title = document.createElement("span");
+        title.textContent = chat.title || "New conversation";
+
+        item.append(icon, title);
+
+        item.addEventListener("click", () => {
+            loadChat(chat.id);
+            closeMobileSidebar();
+        });
+
+        box.appendChild(item);
+    });
 }
 
 function loadChat(id){
@@ -2196,7 +2279,7 @@ function loadChat(id){
     stopGeneration();
     currentChatId = chat.id;
     conversation = Array.isArray(chat.messages) ? chat.messages.map(m => ({role:m.role, content:m.content})) : [];
-    languageMode = chat.language || detectLanguageStyle(conversation.find(m => m.role === "user")?.content || "");
+    languageMode = chat.language === "tamil" ? "tamil" : "english";
     currentPrompt = "";
     promptInput.value = "";
     clearImage();
@@ -2232,7 +2315,31 @@ function loadSavedChat(){
    WELCOME SCREEN
 ========================================================= */
 
+
+function getLoggedInUserName(){
+    try{
+        const user =
+            JSON.parse(
+                localStorage.getItem("vyntraUser") || "null"
+            );
+
+        return String(
+            user?.name ||
+            user?.user?.name ||
+            user?.profile?.name ||
+            "User"
+        ).trim() || "User";
+
+    }catch(e){
+        return "User";
+    }
+}
+
 function showWelcome(){
+
+    currentChatId = null;
+    localStorage.removeItem(ACTIVE_CHAT_KEY);
+    renderRecentChats();
 
     messages.innerHTML = `
 
@@ -2303,6 +2410,14 @@ function showWelcome(){
 
         </div>
     `;
+
+    const welcomeName =
+        document.getElementById("welcomeName");
+
+    if(welcomeName){
+        welcomeName.textContent =
+            getLoggedInUserName();
+    }
 
     attachSuggestions();
 }
@@ -2627,12 +2742,9 @@ function renderMarkdown(markdown){
         );
 
     /*
-       Escape remaining HTML
-       so AI generated HTML doesn't execute.
+       Normal Markdown text is escaped inside inlineMarkdown().
+       Code blocks are escaped separately below.
     */
-
-    source =
-        escapeHTML(source);
 
     const lines =
         source.split(/\r?\n/);
@@ -3027,7 +3139,8 @@ async function streamText(
 
             bindCopyButtons();
 
-            smartScroll(false);
+            /* NEVER change scrollTop while streaming.
+               The user owns the scrollbar during generation. */
         }
 
         await new Promise(
@@ -3250,11 +3363,14 @@ async function generateAI(text, regenerate=false){
     if(!text.trim()) return;
 
     currentPrompt = text.trim();
-    languageMode = detectLanguageStyle(currentPrompt) === "english" && conversation.length
-        ? (conversation.find(m => m.role === "user")?.content ? (chatStore.find(c=>c.id===currentChatId)?.language || "english") : "english")
-        : detectLanguageStyle(currentPrompt);
+
+    // Detect the response language from the CURRENT message only.
+    // Previous chat language must never force the next answer.
+    languageMode = detectLanguageStyle(currentPrompt);
 
     ensureCurrentChat();
+    userScrolledUp = false;
+    lastScrollTop = chatArea.scrollTop;
     controller = new AbortController();
     const signal = controller.signal;
     setGenerating(true);
@@ -3296,7 +3412,15 @@ async function generateAI(text, regenerate=false){
         showError(ai, currentPrompt);
     }finally{
         setGenerating(false);
-        smartScroll(false);
+
+        /* Keep latest reply visible only when the user never
+           took control of the scrollbar. */
+        if(!userScrolledUp){
+            chatArea.scrollTop = chatArea.scrollHeight;
+            lastScrollTop = chatArea.scrollTop;
+        }
+
+        updateScrollButton();
     }
 }
 
@@ -3350,21 +3474,52 @@ function smartScroll(
     force=false
 ){
 
-    if(force || isNearBottom()){
+    /* Explicit scrolls are used only for adding a new turn.
+       During generation, never take control of the scrollbar. */
+    if(force){
 
         chatArea.scrollTo({
-            top:
-                chatArea.scrollHeight,
-
-            behavior:
-                force
-                    ? "smooth"
-                    : "auto"
+            top:chatArea.scrollHeight,
+            behavior:"smooth"
         });
+
+    }else if(!generating && !userScrolledUp && isNearBottom()){
+
+        chatArea.scrollTop =
+            chatArea.scrollHeight;
     }
 
     updateScrollButton();
 }
+
+/* =========================================================
+   USER SCROLL DETECTION
+========================================================= */
+
+chatArea.addEventListener(
+    "scroll",
+    () => {
+
+        const currentTop =
+            chatArea.scrollTop;
+
+        /* Any upward movement during generation means the user
+           intentionally took control of the viewport. Keep that
+           lock until generation ends or the user presses the
+           jump-to-latest button. */
+        if(
+            generating &&
+            currentTop < lastScrollTop - 1
+        ){
+            userScrolledUp = true;
+        }
+
+        lastScrollTop = currentTop;
+
+        updateScrollButton();
+    },
+    {passive:true}
+);
 
 /* =========================================================
    SCROLL BUTTON
@@ -3386,23 +3541,18 @@ function updateScrollButton(){
     }
 }
 
-chatArea.addEventListener(
-    "scroll",
-    updateScrollButton,
-    {passive:true}
-);
-
 scrollDown.addEventListener(
     "click",
     () => {
 
-        chatArea.scrollTo({
-            top:
-                chatArea.scrollHeight,
+        userScrolledUp = false;
 
-            behavior:
-                "smooth"
+        chatArea.scrollTo({
+            top:chatArea.scrollHeight,
+            behavior:"smooth"
         });
+
+        lastScrollTop = chatArea.scrollTop;
 
     }
 );
@@ -3852,6 +4002,46 @@ updateScrollButton();
   if(typeof renderRecentChats==="function")renderRecentChats();
   renderActivity();
 })();
+
+/* =========================================================
+   RESPONSIVE COMPOSER SPACE
+========================================================= */
+
+function syncComposerSpace(){
+    const composerWrap = document.querySelector(".composer-wrap");
+    const chatArea = document.querySelector(".chat-area");
+    const scrollDown = document.getElementById("scrollDown");
+
+    if(!composerWrap || !chatArea) return;
+
+    const height = composerWrap.getBoundingClientRect().height;
+    const extra = window.innerWidth <= 600 ? 18 : 24;
+
+    chatArea.style.setProperty(
+        "--composer-space",
+        `${Math.ceil(height + extra)}px`
+    );
+
+    if(scrollDown){
+        scrollDown.style.bottom =
+            `${Math.ceil(height + 18)}px`;
+    }
+}
+
+window.addEventListener("resize", syncComposerSpace);
+window.addEventListener("orientationchange", () => {
+    setTimeout(syncComposerSpace, 100);
+});
+
+if("ResizeObserver" in window){
+    const composerObserver = new ResizeObserver(syncComposerSpace);
+    const composerWrap = document.querySelector(".composer-wrap");
+    if(composerWrap) composerObserver.observe(composerWrap);
+}
+
+setTimeout(syncComposerSpace, 0);
+setTimeout(syncComposerSpace, 250);
+
 </script>
 
 </body>

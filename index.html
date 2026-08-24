@@ -13,6 +13,11 @@
 ></script>
 
 <style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
 *{
   box-sizing:border-box;
 }
@@ -27,11 +32,13 @@ body{
   background:#080b14;
   color:#f7f8ff;
   min-height:100vh;
+  overflow-x:hidden;
 }
 
 .bg{
   position:fixed;
   inset:0;
+
   background:
     radial-gradient(
       circle at 50% 0%,
@@ -39,26 +46,48 @@ body{
       #12162b 35%,
       #080b14 72%
     );
+
   z-index:-1;
 }
 
-/* =========================
+
+/* =========================================================
+   SCROLL REVEAL
+========================================================= */
+
+.reveal{
+  opacity:0;
+  transform:translateY(55px);
+  transition:
+    opacity .8s ease,
+    transform .8s ease;
+}
+
+.reveal.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+/* =========================================================
    HEADER
-========================= */
+========================================================= */
 
 .header{
   position:sticky;
   top:0;
-  z-index:20;
+  z-index:30;
 
   padding:16px 6%;
 
   border-bottom:1px solid #252b40;
 
-  background:rgba(8,11,20,.78);
-  backdrop-filter:blur(14px);
+  background:rgba(8,11,20,.82);
+
+  backdrop-filter:blur(16px);
 
   display:flex;
+
   justify-content:space-between;
   align-items:center;
 }
@@ -72,6 +101,7 @@ body{
 .logo{
   width:44px;
   height:44px;
+
   border-radius:13px;
 
   display:grid;
@@ -95,54 +125,76 @@ body{
 
 .header-links{
   display:flex;
-  gap:18px;
-  align-items:center;
+  gap:20px;
 }
 
 .header-links a{
   color:#c9cde0;
+
   text-decoration:none;
+
   font-size:14px;
+
+  transition:
+    color .2s ease;
 }
 
 .header-links a:hover{
   color:#a78bfa;
 }
 
-/* =========================
+
+/* =========================================================
    MAIN
-========================= */
+========================================================= */
 
 .page{
   width:min(1100px,92vw);
+
   margin:auto;
-  padding:70px 0 80px;
+
+  padding:
+    70px
+    0
+    90px;
 }
 
-/* =========================
-   PUBLIC HERO
-========================= */
+
+/* =========================================================
+   HERO
+========================================================= */
 
 .hero{
   text-align:center;
-  max-width:850px;
-  margin:0 auto 55px;
+
+  max-width:900px;
+
+  margin:
+    0
+    auto
+    100px;
 }
 
 .badge{
   display:inline-block;
 
-  padding:8px 13px;
+  padding:
+    8px
+    14px;
 
   border-radius:999px;
 
-  background:rgba(124,58,237,.12);
+  background:
+    rgba(124,58,237,.12);
 
-  border:1px solid rgba(167,139,250,.24);
+  border:
+    1px solid
+    rgba(167,139,250,.28);
 
   color:#c4b5fd;
 
   font-size:12px;
+
   font-weight:800;
 
   letter-spacing:1.5px;
@@ -152,13 +204,21 @@ body{
 
 .hero h1{
   font-size:
-    clamp(42px,7vw,76px);
+    clamp(
+      48px,
+      8vw,
+      86px
+    );
 
-  line-height:1.02;
+  line-height:1;
 
-  margin:18px 0 16px;
+  margin:
+    20px
+    0
+    18px;
 
-  letter-spacing:-2.5px;
+  letter-spacing:
+    -3px;
 }
 
 .hero p{
@@ -168,25 +228,33 @@ body{
 
   line-height:1.8;
 
-  max-width:800px;
+  max-width:820px;
 
-  margin:0 auto;
+  margin:
+    0
+    auto;
 }
 
 .hero-actions{
   display:flex;
-  gap:12px;
+
   justify-content:center;
+
+  gap:12px;
+
   flex-wrap:wrap;
 
-  margin-top:28px;
+  margin-top:30px;
 }
 
 .hero-btn{
   border:0;
+
   border-radius:13px;
 
-  padding:13px 18px;
+  padding:
+    14px
+    20px;
 
   font-weight:800;
 
@@ -195,6 +263,14 @@ body{
   text-decoration:none;
 
   display:inline-block;
+
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+.hero-btn:hover{
+  transform:translateY(-2px);
 }
 
 .hero-primary{
@@ -206,12 +282,15 @@ body{
   background:#1b2235;
   color:#f7f8ff;
 
-  border:1px solid #39415b;
+  border:
+    1px solid
+    #39415b;
 }
 
-/* =========================
+
+/* =========================================================
    FEATURES
-========================= */
+========================================================= */
 
 .features{
   display:grid;
@@ -221,71 +300,193 @@ body{
 
   gap:14px;
 
-  margin-bottom:55px;
+  margin-bottom:100px;
 }
 
 .feature{
-  padding:20px;
+  padding:22px;
 
-  border-radius:18px;
+  border-radius:20px;
 
-  border:1px solid #2d344b;
+  border:
+    1px solid
+    #2d344b;
 
   background:
-    rgba(17,22,38,.76);
+    rgba(17,22,38,.8);
+
+  transition:
+    transform .25s ease,
+    border-color .25s ease;
+}
+
+.feature:hover{
+  transform:translateY(-6px);
+
+  border-color:#6355b5;
 }
 
 .feature-icon{
-  width:40px;
-  height:40px;
+  width:42px;
+  height:42px;
 
   border-radius:12px;
 
   display:grid;
+
   place-items:center;
 
   background:#22183f;
 
   color:#c4b5fd;
 
-  font-size:18px;
+  font-size:19px;
 
-  margin-bottom:13px;
+  margin-bottom:14px;
 }
 
 .feature h3{
-  font-size:16px;
-  margin:0 0 7px;
+  margin:
+    0
+    0
+    8px;
+
+  font-size:17px;
 }
 
 .feature p{
   color:#8f99b0;
+
   font-size:13px;
-  line-height:1.6;
+
+  line-height:1.7;
+
   margin:0;
 }
 
-/* =========================
-   AUTH SECTION
-========================= */
+
+/* =========================================================
+   ABOUT / INFO
+========================================================= */
+
+.info-section{
+  margin-bottom:100px;
+}
+
+.info-card{
+  padding:36px;
+
+  border:
+    1px solid
+    #2d344b;
+
+  border-radius:24px;
+
+  background:
+    rgba(18,22,38,.88);
+
+  box-shadow:
+    0
+    20px
+    60px
+    rgba(0,0,0,.18);
+}
+
+.info-card h2{
+  font-size:32px;
+
+  margin:
+    0
+    0
+    16px;
+}
+
+.info-card p{
+  color:#adb6ca;
+
+  line-height:1.8;
+}
+
+.info-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:18px;
+
+  margin-top:25px;
+}
+
+.info-item{
+  padding:18px;
+
+  border-radius:15px;
+
+  background:
+    rgba(10,14,25,.7);
+
+  border:
+    1px solid
+    #262d43;
+}
+
+.info-item h3{
+  margin:
+    0
+    0
+    7px;
+
+  font-size:15px;
+}
+
+.info-item p{
+  font-size:13px;
+
+  margin:0;
+
+  line-height:1.6;
+}
+
+
+/* =========================================================
+   LOGIN SECTION
+   HIDDEN INITIALLY
+========================================================= */
+
+.auth-section{
+  display:none;
+
+  margin-bottom:100px;
+}
+
+.auth-section.active{
+  display:block;
+}
+
+
+/* =========================================================
+   AUTH GRID
+========================================================= */
 
 .auth-wrap{
   display:grid;
 
   grid-template-columns:
-    1fr 460px;
+    1fr
+    460px;
 
   gap:28px;
 
   align-items:start;
-
-  margin-top:20px;
 }
 
-.info-card{
-  padding:30px;
+.auth-info{
+  padding:32px;
 
-  border:1px solid #2d344b;
+  border:
+    1px solid
+    #2d344b;
 
   border-radius:24px;
 
@@ -293,45 +494,65 @@ body{
     rgba(18,22,38,.88);
 }
 
-.info-card h2{
-  margin-top:0;
-  font-size:28px;
+.auth-info h2{
+  margin:
+    0
+    0
+    15px;
+
+  font-size:30px;
 }
 
-.info-card p{
+.auth-info p{
   color:#adb6ca;
+
   line-height:1.8;
 }
 
-.info-card ul{
+.auth-info ul{
   color:#adb6ca;
+
   line-height:1.8;
 
   padding-left:20px;
 }
 
-.info-card li{
+.auth-info li{
   margin-bottom:8px;
 }
 
-/* =========================
+.auth-info a{
+  color:#a78bfa;
+
+  text-decoration:none;
+
+  font-weight:700;
+}
+
+
+/* =========================================================
    LOGIN CARD
-========================= */
+========================================================= */
 
 .card{
   width:100%;
 
   padding:34px;
 
-  border:1px solid #30364d;
+  border:
+    1px solid
+    #30364d;
 
   border-radius:28px;
 
   background:
-    rgba(18,22,38,.95);
+    rgba(18,22,38,.96);
 
   box-shadow:
-    0 25px 80px rgba(0,0,0,.35);
+    0
+    25px
+    80px
+    rgba(0,0,0,.38);
 }
 
 .auth-logo{
@@ -341,6 +562,7 @@ body{
   border-radius:20px;
 
   display:grid;
+
   place-items:center;
 
   background:
@@ -351,6 +573,7 @@ body{
     );
 
   font-size:34px;
+
   font-weight:800;
 
   margin:auto;
@@ -359,7 +582,10 @@ body{
 .auth-title{
   text-align:center;
 
-  margin:16px 0 4px;
+  margin:
+    16px
+    0
+    4px;
 
   font-size:30px;
 }
@@ -372,14 +598,25 @@ body{
   margin-bottom:26px;
 }
 
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
 input{
   width:100%;
 
-  padding:15px 16px;
+  padding:
+    15px
+    16px;
 
-  margin:7px 0;
+  margin:
+    7px
+    0;
 
-  border:1px solid #353b53;
+  border:
+    1px solid
+    #353b53;
 
   border-radius:14px;
 
@@ -395,6 +632,11 @@ input{
 input:focus{
   border-color:#7657ff;
 }
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
 
 .btn{
   width:100%;
@@ -416,13 +658,20 @@ input:focus{
 
 .btn:disabled{
   opacity:.6;
+
   cursor:not-allowed;
 }
 
 .primary{
   background:#f5f6fa;
+
   color:#111;
 }
+
+
+/* =========================================================
+   LINKS
+========================================================= */
 
 .link{
   color:#9d8aff;
@@ -443,7 +692,9 @@ input:focus{
 
   color:#727b92;
 
-  margin:20px 0;
+  margin:
+    20px
+    0;
 }
 
 .divider:before,
@@ -464,6 +715,11 @@ input:focus{
 
   min-height:44px;
 }
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
 
 .msg{
   min-height:22px;
@@ -499,10 +755,17 @@ input:focus{
   display:none;
 }
 
+
+/* =========================================================
+   STATUS
+========================================================= */
+
 .status-box{
   margin-top:14px;
 
-  padding:12px 14px;
+  padding:
+    12px
+    14px;
 
   border-radius:12px;
 
@@ -552,16 +815,19 @@ input:focus{
     rgba(239,68,68,.18);
 }
 
-/* =========================
+
+/* =========================================================
    FOOTER
-========================= */
+========================================================= */
 
 footer{
-  margin-top:55px;
+  margin-top:60px;
 
-  padding-top:22px;
+  padding-top:24px;
 
-  border-top:1px solid #2a3147;
+  border-top:
+    1px solid
+    #2a3147;
 
   text-align:center;
 
@@ -584,12 +850,14 @@ footer{
 
 .footer-links a{
   color:#9d8aff;
+
   text-decoration:none;
 }
 
-/* =========================
-   MOBILE
-========================= */
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media(max-width:900px){
 
@@ -607,11 +875,13 @@ footer{
 @media(max-width:600px){
 
   .header{
-    padding:13px 5%;
+    padding:
+      13px
+      5%;
   }
 
   .header-links{
-    gap:10px;
+    gap:11px;
   }
 
   .header-links a{
@@ -619,11 +889,15 @@ footer{
   }
 
   .page{
-    padding-top:40px;
+    padding-top:45px;
+  }
+
+  .hero{
+    margin-bottom:75px;
   }
 
   .hero h1{
-    font-size:42px;
+    font-size:44px;
   }
 
   .hero p{
@@ -634,7 +908,12 @@ footer{
     grid-template-columns:1fr;
   }
 
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+
   .info-card,
+  .auth-info,
   .card{
     padding:24px 20px;
   }
@@ -654,7 +933,7 @@ footer{
 
 
 <!-- =====================================================
-     PUBLIC HEADER
+     HEADER
 ===================================================== -->
 
 <header class="header">
@@ -678,10 +957,6 @@ footer{
       About
     </a>
 
-    <a href="#login">
-      Sign In
-    </a>
-
     <a href="privacy.html">
       Privacy
     </a>
@@ -695,7 +970,7 @@ footer{
 
 
 <!-- =====================================================
-     PUBLIC HERO
+     HERO
 ===================================================== -->
 
 <section
@@ -703,9 +978,9 @@ footer{
   id="about"
 >
 
-  <span class="badge">
+  <div class="badge">
     AI PERSONAL ASSISTANT
-  </span>
+  </div>
 
 
   <h1>
@@ -715,10 +990,11 @@ footer{
 
   <p>
     VYNTRA AI is an AI-powered personal assistant
-    designed to help users with programming and technical
-    questions, IT infrastructure, cloud and networking,
-    learning, project development, interview preparation,
-    career guidance, and everyday questions.
+    designed to help users with programming and
+    technical questions, IT infrastructure, cloud
+    and networking, learning, project development,
+    interview preparation, career guidance, and
+    everyday questions.
   </p>
 
 
@@ -727,9 +1003,11 @@ footer{
     <a
       href="#login"
       class="hero-btn hero-primary"
+      onclick="openLogin(event)"
     >
       Get Started
     </a>
+
 
     <a
       href="privacy.html"
@@ -747,7 +1025,9 @@ footer{
      FEATURES
 ===================================================== -->
 
-<section class="features">
+<section
+  class="features reveal"
+>
 
   <div class="feature">
 
@@ -828,21 +1108,17 @@ footer{
 
 
 <!-- =====================================================
-     PUBLIC INFORMATION + AUTH
+     ABOUT SECTION
 ===================================================== -->
 
 <section
-  class="auth-wrap"
-  id="login"
+  class="info-section reveal"
 >
-
-
-  <!-- PUBLIC INFORMATION -->
 
   <div class="info-card">
 
     <h2>
-      Welcome to VYNTRA AI
+      What is VYNTRA AI?
     </h2>
 
 
@@ -858,35 +1134,67 @@ footer{
     </p>
 
 
-    <ul>
+    <div class="info-grid">
 
-      <li>
-        Programming and technical assistance
-      </li>
+      <div class="info-item">
 
-      <li>
-        IT infrastructure and networking
-      </li>
+        <h3>
+          Programming
+        </h3>
 
-      <li>
-        Cloud learning and project development
-      </li>
+        <p>
+          Coding help, debugging,
+          logic and technical questions.
+        </p>
 
-      <li>
-        Technical interview preparation
-      </li>
-
-      <li>
-        Career guidance and everyday questions
-      </li>
-
-    </ul>
+      </div>
 
 
-    <p>
-      Access to the assistant is restricted to
-      approved users.
-    </p>
+      <div class="info-item">
+
+        <h3>
+          Infrastructure
+        </h3>
+
+        <p>
+          IT infrastructure,
+          Linux, networking and cloud.
+        </p>
+
+      </div>
+
+
+      <div class="info-item">
+
+        <h3>
+          Learning
+        </h3>
+
+        <p>
+          Project development,
+          concepts and learning guidance.
+        </p>
+
+      </div>
+
+
+      <div class="info-item">
+
+        <h3>
+          Career
+        </h3>
+
+        <p>
+          Interview preparation,
+          career guidance and everyday questions.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <br>
 
 
     <a
@@ -902,163 +1210,235 @@ footer{
 
   </div>
 
-
-  <!-- ===================================================
-       AUTH CARD
-  ==================================================== -->
-
-  <div class="card">
-
-    <div class="auth-logo">
-      V
-    </div>
+</section>
 
 
-    <h2 class="auth-title">
-      VYNTRA AI
-    </h2>
+<!-- =====================================================
+     AUTH SECTION
+     COMPLETELY HIDDEN INITIALLY
+===================================================== -->
+
+<section
+  id="login"
+  class="auth-section"
+>
+
+  <div class="auth-wrap">
 
 
-    <div class="sub">
-      Secure access to your AI assistant
-    </div>
+    <!-- INFO -->
 
-
-    <!-- LOGIN VIEW -->
-
-    <section id="loginView">
-
-      <div id="googleBtn"></div>
-
-
-      <div class="divider">
-        OR
-      </div>
-
-
-      <input
-        id="identifier"
-        placeholder="Email or Mobile Number"
-        autocomplete="username"
-      >
-
-
-      <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password"
-      >
-
-
-      <button
-        id="loginButton"
-        class="btn primary"
-        onclick="login()"
-      >
-        Sign In
-      </button>
-
-
-      <div
-        class="link"
-        onclick="showSignup()"
-      >
-        Don't have an account? Create Account
-      </div>
-
-    </section>
-
-
-    <!-- SIGNUP VIEW -->
-
-    <section
-      id="signupView"
-      class="hidden"
+    <div
+      class="auth-info reveal"
     >
 
-      <input
-        id="name"
-        placeholder="Full Name"
-        autocomplete="name"
-      >
+      <h2>
+        Welcome to VYNTRA AI
+      </h2>
 
 
-      <input
-        id="email"
-        type="email"
-        placeholder="Email Address"
-        autocomplete="email"
-      >
+      <p>
+        Sign in to access your approved VYNTRA AI
+        assistant account.
+      </p>
 
 
-      <input
-        id="mobile"
-        inputmode="numeric"
-        maxlength="10"
-        placeholder="10-digit Mobile Number"
-        autocomplete="tel"
-      >
+      <ul>
+
+        <li>
+          Programming and technical assistance
+        </li>
+
+        <li>
+          IT infrastructure and networking
+        </li>
+
+        <li>
+          Cloud learning and project development
+        </li>
+
+        <li>
+          Technical interview preparation
+        </li>
+
+        <li>
+          Career guidance and everyday questions
+        </li>
+
+      </ul>
 
 
-      <input
-        id="signupPassword"
-        type="password"
-        placeholder="Create Password (8+ characters)"
-        autocomplete="new-password"
-      >
+      <p>
+        New user? Request access and wait for
+        administrator approval.
+      </p>
 
 
-      <button
-        id="signupButton"
-        class="btn primary"
-        onclick="signup()"
-      >
-        Request Access
-      </button>
+      <a href="privacy.html">
+        Privacy Policy →
+      </a>
 
-
-      <div
-        class="link"
-        onclick="showLogin()"
-      >
-        Already have an account? Sign In
-      </div>
-
-    </section>
-
-
-    <!-- MESSAGE -->
-
-    <div
-      id="msg"
-      class="msg"
-    ></div>
-
-
-    <!-- EMAIL STATUS -->
-
-    <div
-      id="emailStatus"
-      class="status-box"
-    ></div>
-
-
-    <div class="small">
-      Only approved users can access VYNTRA AI.
     </div>
 
 
-    <div class="small">
+    <!-- AUTH CARD -->
 
-      Admin?
+    <div
+      class="card reveal"
+    >
 
-      <a
-        href="admin.html"
-        style="color:#9d8aff"
+      <div class="auth-logo">
+        V
+      </div>
+
+
+      <h2 class="auth-title">
+        VYNTRA AI
+      </h2>
+
+
+      <div class="sub">
+        Secure access to your AI assistant
+      </div>
+
+
+      <!-- LOGIN VIEW -->
+
+      <section id="loginView">
+
+        <div id="googleBtn"></div>
+
+
+        <div class="divider">
+          OR
+        </div>
+
+
+        <input
+          id="identifier"
+          placeholder="Email or Mobile Number"
+          autocomplete="username"
+        >
+
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Password"
+          autocomplete="current-password"
+        >
+
+
+        <button
+          id="loginButton"
+          class="btn primary"
+          onclick="login()"
+        >
+          Sign In
+        </button>
+
+
+        <div
+          class="link"
+          onclick="showSignup()"
+        >
+          Don't have an account? Create Account
+        </div>
+
+      </section>
+
+
+      <!-- SIGNUP VIEW -->
+
+      <section
+        id="signupView"
+        class="hidden"
       >
-        Admin Login
-      </a>
+
+        <input
+          id="name"
+          placeholder="Full Name"
+          autocomplete="name"
+        >
+
+
+        <input
+          id="email"
+          type="email"
+          placeholder="Email Address"
+          autocomplete="email"
+        >
+
+
+        <input
+          id="mobile"
+          inputmode="numeric"
+          maxlength="10"
+          placeholder="10-digit Mobile Number"
+          autocomplete="tel"
+        >
+
+
+        <input
+          id="signupPassword"
+          type="password"
+          placeholder="Create Password (8+ characters)"
+          autocomplete="new-password"
+        >
+
+
+        <button
+          id="signupButton"
+          class="btn primary"
+          onclick="signup()"
+        >
+          Request Access
+        </button>
+
+
+        <div
+          class="link"
+          onclick="showLogin()"
+        >
+          Already have an account? Sign In
+        </div>
+
+      </section>
+
+
+      <!-- MESSAGE -->
+
+      <div
+        id="msg"
+        class="msg"
+      ></div>
+
+
+      <!-- EMAIL STATUS -->
+
+      <div
+        id="emailStatus"
+        class="status-box"
+      ></div>
+
+
+      <div class="small">
+        Only approved users can access VYNTRA AI.
+      </div>
+
+
+      <div class="small">
+
+        Admin?
+
+        <a
+          href="admin.html"
+          style="color:#9d8aff"
+        >
+          Admin Login
+        </a>
+
+      </div>
 
     </div>
 
@@ -1071,7 +1451,7 @@ footer{
      FOOTER
 ===================================================== -->
 
-<footer>
+<footer class="reveal">
 
   © 2026 VYNTRA AI
 
@@ -1095,7 +1475,7 @@ footer{
 <script>
 
 /* =========================================================
-   API CONFIG
+   CONFIG
 ========================================================= */
 
 const API_URL =
@@ -1109,6 +1489,101 @@ const GOOGLE_CLIENT_ID =
 const $ =
   id =>
     document.getElementById(id);
+
+
+/* =========================================================
+   SCROLL REVEAL
+========================================================= */
+
+const observer =
+  new IntersectionObserver(
+    entries => {
+
+      entries.forEach(
+        entry => {
+
+          if(
+            entry.isIntersecting
+          ){
+
+            entry.target
+              .classList
+              .add("show");
+
+          }
+
+        }
+      );
+
+    },
+    {
+      threshold:0.12
+    }
+  );
+
+
+function initScrollReveal(){
+
+  document
+    .querySelectorAll(".reveal")
+    .forEach(
+      element =>
+        observer.observe(
+          element
+        )
+    );
+}
+
+
+/* =========================================================
+   OPEN LOGIN
+========================================================= */
+
+function openLogin(event){
+
+  if(event){
+    event.preventDefault();
+  }
+
+
+  const authSection =
+    $("login");
+
+
+  /*
+    Show auth section only now.
+  */
+
+  authSection.classList.add(
+    "active"
+  );
+
+
+  /*
+    Give browser a tiny moment
+    before scrolling.
+  */
+
+  requestAnimationFrame(
+    () => {
+
+      authSection.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+    }
+  );
+
+
+  /*
+    Start reveal observer
+    for login components.
+  */
+
+  initScrollReveal();
+
+}
 
 
 /* =========================================================
@@ -1142,13 +1617,10 @@ function message(
 
 function clearEmailStatus(){
 
-  const box =
-    $("emailStatus");
-
-  box.textContent =
+  $("emailStatus").textContent =
     "";
 
-  box.className =
+  $("emailStatus").className =
     "status-box";
 }
 
@@ -1158,13 +1630,10 @@ function showEmailStatus(
   type = "success"
 ){
 
-  const box =
-    $("emailStatus");
-
-  box.textContent =
+  $("emailStatus").textContent =
     text;
 
-  box.className =
+  $("emailStatus").className =
     "status-box " +
     (
       type === "success"
@@ -1403,7 +1872,6 @@ async function signup(){
   button.disabled =
     true;
 
-
   button.textContent =
     "Submitting...";
 
@@ -1461,7 +1929,9 @@ async function signup(){
           "success"
         );
 
-      }else if(
+      }
+
+      else if(
         data.emailSent ===
         false
       ){
@@ -1477,12 +1947,15 @@ async function signup(){
           data.emailError
         );
 
-      }else{
+      }
+
+      else{
 
         showEmailStatus(
           "Your access request has been submitted. Please wait for administrator approval.",
           "success"
         );
+
       }
 
 
@@ -1577,7 +2050,6 @@ async function login(){
 
   button.disabled =
     true;
-
 
   button.textContent =
     "Signing In...";
@@ -1703,7 +2175,7 @@ async function login(){
 
 
 /* =========================================================
-   GOOGLE
+   GOOGLE INITIALIZE
 ========================================================= */
 
 function initGoogle(){
@@ -1736,6 +2208,7 @@ function initGoogle(){
 
     cancel_on_tap_outside:
       true
+
   });
 
 
@@ -1903,24 +2376,31 @@ async function handleGoogle(
     message(
       "Cannot connect to VYNTRA AI API."
     );
+
   }
 }
 
 
 /* =========================================================
-   RESET ON LOAD
+   PAGE RESET
 ========================================================= */
 
 function resetPage(){
 
   clearOldState();
 
-  showLogin();
+  /*
+    Login section must start hidden.
+  */
+
+  $("login")
+    .classList
+    .remove("active");
 }
 
 
 /* =========================================================
-   NORMAL LOAD
+   PAGE LOAD
 ========================================================= */
 
 window.addEventListener(
@@ -1929,6 +2409,8 @@ window.addEventListener(
 
     resetPage();
 
+    initScrollReveal();
+
     initGoogle();
 
   }
@@ -1936,7 +2418,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   BACK / FORWARD RESTORE
+   BACK / FORWARD
 ========================================================= */
 
 window.addEventListener(
@@ -1944,22 +2426,6 @@ window.addEventListener(
   () => {
 
     resetPage();
-
-  }
-);
-
-
-/* =========================================================
-   PAGE HIDE
-========================================================= */
-
-window.addEventListener(
-  "pagehide",
-  () => {
-
-    message("");
-
-    clearEmailStatus();
 
   }
 );
