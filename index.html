@@ -13,9 +13,12 @@
 ></script>
 
 <style>
-
 *{
   box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
 }
 
 body{
@@ -24,40 +27,314 @@ body{
   background:#080b14;
   color:#f7f8ff;
   min-height:100vh;
-  display:grid;
-  place-items:center;
 }
 
 .bg{
   position:fixed;
   inset:0;
-
   background:
     radial-gradient(
-      circle at 50% 10%,
+      circle at 50% 0%,
       #39206d 0,
       #12162b 35%,
       #080b14 72%
     );
-
   z-index:-1;
 }
 
+/* =========================
+   HEADER
+========================= */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:20;
+
+  padding:16px 6%;
+
+  border-bottom:1px solid #252b40;
+
+  background:rgba(8,11,20,.78);
+  backdrop-filter:blur(14px);
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo{
+  width:44px;
+  height:44px;
+  border-radius:13px;
+
+  display:grid;
+  place-items:center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6d4aff,
+      #8f5cff
+    );
+
+  font-size:23px;
+  font-weight:900;
+}
+
+.brand-name{
+  font-size:20px;
+  font-weight:800;
+}
+
+.header-links{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+.header-links a{
+  color:#c9cde0;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.header-links a:hover{
+  color:#a78bfa;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.page{
+  width:min(1100px,92vw);
+  margin:auto;
+  padding:70px 0 80px;
+}
+
+/* =========================
+   PUBLIC HERO
+========================= */
+
+.hero{
+  text-align:center;
+  max-width:850px;
+  margin:0 auto 55px;
+}
+
+.badge{
+  display:inline-block;
+
+  padding:8px 13px;
+
+  border-radius:999px;
+
+  background:rgba(124,58,237,.12);
+
+  border:1px solid rgba(167,139,250,.24);
+
+  color:#c4b5fd;
+
+  font-size:12px;
+  font-weight:800;
+
+  letter-spacing:1.5px;
+
+  text-transform:uppercase;
+}
+
+.hero h1{
+  font-size:
+    clamp(42px,7vw,76px);
+
+  line-height:1.02;
+
+  margin:18px 0 16px;
+
+  letter-spacing:-2.5px;
+}
+
+.hero p{
+  color:#adb6ca;
+
+  font-size:17px;
+
+  line-height:1.8;
+
+  max-width:800px;
+
+  margin:0 auto;
+}
+
+.hero-actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+
+  margin-top:28px;
+}
+
+.hero-btn{
+  border:0;
+  border-radius:13px;
+
+  padding:13px 18px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+  text-decoration:none;
+
+  display:inline-block;
+}
+
+.hero-primary{
+  background:#f5f6fa;
+  color:#111;
+}
+
+.hero-secondary{
+  background:#1b2235;
+  color:#f7f8ff;
+
+  border:1px solid #39415b;
+}
+
+/* =========================
+   FEATURES
+========================= */
+
+.features{
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:14px;
+
+  margin-bottom:55px;
+}
+
+.feature{
+  padding:20px;
+
+  border-radius:18px;
+
+  border:1px solid #2d344b;
+
+  background:
+    rgba(17,22,38,.76);
+}
+
+.feature-icon{
+  width:40px;
+  height:40px;
+
+  border-radius:12px;
+
+  display:grid;
+  place-items:center;
+
+  background:#22183f;
+
+  color:#c4b5fd;
+
+  font-size:18px;
+
+  margin-bottom:13px;
+}
+
+.feature h3{
+  font-size:16px;
+  margin:0 0 7px;
+}
+
+.feature p{
+  color:#8f99b0;
+  font-size:13px;
+  line-height:1.6;
+  margin:0;
+}
+
+/* =========================
+   AUTH SECTION
+========================= */
+
+.auth-wrap{
+  display:grid;
+
+  grid-template-columns:
+    1fr 460px;
+
+  gap:28px;
+
+  align-items:start;
+
+  margin-top:20px;
+}
+
+.info-card{
+  padding:30px;
+
+  border:1px solid #2d344b;
+
+  border-radius:24px;
+
+  background:
+    rgba(18,22,38,.88);
+}
+
+.info-card h2{
+  margin-top:0;
+  font-size:28px;
+}
+
+.info-card p{
+  color:#adb6ca;
+  line-height:1.8;
+}
+
+.info-card ul{
+  color:#adb6ca;
+  line-height:1.8;
+
+  padding-left:20px;
+}
+
+.info-card li{
+  margin-bottom:8px;
+}
+
+/* =========================
+   LOGIN CARD
+========================= */
+
 .card{
-  width:min(460px,92vw);
+  width:100%;
 
   padding:34px;
 
   border:1px solid #30364d;
+
   border-radius:28px;
 
-  background:rgba(18,22,38,.9);
+  background:
+    rgba(18,22,38,.95);
 
   box-shadow:
-    0 25px 80px rgba(0,0,0,.45);
+    0 25px 80px rgba(0,0,0,.35);
 }
 
-.logo{
+.auth-logo{
   width:68px;
   height:68px;
 
@@ -79,15 +356,19 @@ body{
   margin:auto;
 }
 
-h1{
+.auth-title{
   text-align:center;
+
   margin:16px 0 4px;
+
   font-size:30px;
 }
 
 .sub{
   text-align:center;
+
   color:#aeb6cc;
+
   margin-bottom:26px;
 }
 
@@ -95,12 +376,15 @@ input{
   width:100%;
 
   padding:15px 16px;
+
   margin:7px 0;
 
   border:1px solid #353b53;
+
   border-radius:14px;
 
   background:#101423;
+
   color:#fff;
 
   font-size:15px;
@@ -116,12 +400,15 @@ input:focus{
   width:100%;
 
   border:0;
+
   border-radius:14px;
 
   padding:15px;
+
   margin-top:10px;
 
   font-weight:700;
+
   font-size:15px;
 
   cursor:pointer;
@@ -137,21 +424,21 @@ input:focus{
   color:#111;
 }
 
-.secondary{
-  background:#252b40;
-  color:#fff;
-}
-
 .link{
   color:#9d8aff;
+
   cursor:pointer;
+
   text-align:center;
+
   margin-top:18px;
 }
 
 .divider{
   display:flex;
+
   align-items:center;
+
   gap:12px;
 
   color:#727b92;
@@ -172,6 +459,7 @@ input:focus{
 
 #googleBtn{
   display:flex;
+
   justify-content:center;
 
   min-height:44px;
@@ -264,18 +552,98 @@ input:focus{
     rgba(239,68,68,.18);
 }
 
-@media(max-width:500px){
+/* =========================
+   FOOTER
+========================= */
 
-  .card{
-    padding:26px 20px;
+footer{
+  margin-top:55px;
+
+  padding-top:22px;
+
+  border-top:1px solid #2a3147;
+
+  text-align:center;
+
+  color:#737c92;
+
+  font-size:13px;
+}
+
+.footer-links{
+  display:flex;
+
+  justify-content:center;
+
+  gap:18px;
+
+  flex-wrap:wrap;
+
+  margin-top:10px;
+}
+
+.footer-links a{
+  color:#9d8aff;
+  text-decoration:none;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:900px){
+
+  .features{
+    grid-template-columns:
+      repeat(2,1fr);
   }
 
-  h1{
-    font-size:27px;
+  .auth-wrap{
+    grid-template-columns:1fr;
   }
 
 }
 
+@media(max-width:600px){
+
+  .header{
+    padding:13px 5%;
+  }
+
+  .header-links{
+    gap:10px;
+  }
+
+  .header-links a{
+    font-size:12px;
+  }
+
+  .page{
+    padding-top:40px;
+  }
+
+  .hero h1{
+    font-size:42px;
+  }
+
+  .hero p{
+    font-size:15px;
+  }
+
+  .features{
+    grid-template-columns:1fr;
+  }
+
+  .info-card,
+  .card{
+    padding:24px 20px;
+  }
+
+  .auth-title{
+    font-size:27px;
+  }
+
+}
 </style>
 
 </head>
@@ -284,13 +652,60 @@ input:focus{
 
 <div class="bg"></div>
 
-<div class="card">
 
-  <!-- LOGO -->
+<!-- =====================================================
+     PUBLIC HEADER
+===================================================== -->
 
-  <div class="logo">
-    V
+<header class="header">
+
+  <div class="brand">
+
+    <div class="logo">
+      V
+    </div>
+
+    <div class="brand-name">
+      VYNTRA AI
+    </div>
+
   </div>
+
+
+  <nav class="header-links">
+
+    <a href="#about">
+      About
+    </a>
+
+    <a href="#login">
+      Sign In
+    </a>
+
+    <a href="privacy.html">
+      Privacy
+    </a>
+
+  </nav>
+
+</header>
+
+
+<main class="page">
+
+
+<!-- =====================================================
+     PUBLIC HERO
+===================================================== -->
+
+<section
+  class="hero"
+  id="about"
+>
+
+  <span class="badge">
+    AI PERSONAL ASSISTANT
+  </span>
 
 
   <h1>
@@ -298,158 +713,383 @@ input:focus{
   </h1>
 
 
-  <div class="sub">
-    Secure access to your AI assistant
-  </div>
+  <p>
+    VYNTRA AI is an AI-powered personal assistant
+    designed to help users with programming and technical
+    questions, IT infrastructure, cloud and networking,
+    learning, project development, interview preparation,
+    career guidance, and everyday questions.
+  </p>
 
 
-  <!-- =====================================================
-       LOGIN VIEW
-  ====================================================== -->
-
-  <section id="loginView">
-
-    <div id="googleBtn"></div>
-
-
-    <div class="divider">
-      OR
-    </div>
-
-
-    <input
-      id="identifier"
-      placeholder="Email or Mobile Number"
-      autocomplete="username"
-    >
-
-
-    <input
-      id="password"
-      type="password"
-      placeholder="Password"
-      autocomplete="current-password"
-    >
-
-
-    <button
-      id="loginButton"
-      class="btn primary"
-      onclick="login()"
-    >
-      Sign In
-    </button>
-
-
-    <div
-      class="link"
-      onclick="showSignup()"
-    >
-      Don't have an account? Create Account
-    </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       SIGNUP VIEW
-  ====================================================== -->
-
-  <section
-    id="signupView"
-    class="hidden"
-  >
-
-    <input
-      id="name"
-      placeholder="Full Name"
-      autocomplete="name"
-    >
-
-
-    <input
-      id="email"
-      type="email"
-      placeholder="Email Address"
-      autocomplete="email"
-    >
-
-
-    <input
-      id="mobile"
-      inputmode="numeric"
-      maxlength="10"
-      placeholder="10-digit Mobile Number"
-      autocomplete="tel"
-    >
-
-
-    <input
-      id="signupPassword"
-      type="password"
-      placeholder="Create Password (8+ characters)"
-      autocomplete="new-password"
-    >
-
-
-    <button
-      id="signupButton"
-      class="btn primary"
-      onclick="signup()"
-    >
-      Request Access
-    </button>
-
-
-    <div
-      class="link"
-      onclick="showLogin()"
-    >
-      Already have an account? Sign In
-    </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       GENERAL MESSAGE
-  ====================================================== -->
-
-  <div
-    id="msg"
-    class="msg"
-  ></div>
-
-
-  <!-- =====================================================
-       EMAIL STATUS
-  ====================================================== -->
-
-  <div
-    id="emailStatus"
-    class="status-box"
-  ></div>
-
-
-  <div class="small">
-    Only approved users can access VYNTRA AI.
-  </div>
-
-
-  <div class="small">
-
-    Admin?
+  <div class="hero-actions">
 
     <a
-      href="admin.html"
-      style="color:#9d8aff"
+      href="#login"
+      class="hero-btn hero-primary"
     >
-      Admin Login
+      Get Started
+    </a>
+
+    <a
+      href="privacy.html"
+      class="hero-btn hero-secondary"
+    >
+      Privacy Policy
     </a>
 
   </div>
 
-</div>
+</section>
+
+
+<!-- =====================================================
+     FEATURES
+===================================================== -->
+
+<section class="features">
+
+  <div class="feature">
+
+    <div class="feature-icon">
+      &lt;/&gt;
+    </div>
+
+    <h3>
+      Programming
+    </h3>
+
+    <p>
+      Get help with programming,
+      coding problems and technical
+      questions.
+    </p>
+
+  </div>
+
+
+  <div class="feature">
+
+    <div class="feature-icon">
+      ☁
+    </div>
+
+    <h3>
+      Cloud & Networking
+    </h3>
+
+    <p>
+      Learn cloud platforms,
+      networking and infrastructure
+      concepts.
+    </p>
+
+  </div>
+
+
+  <div class="feature">
+
+    <div class="feature-icon">
+      ✦
+    </div>
+
+    <h3>
+      Learning & Projects
+    </h3>
+
+    <p>
+      Get guidance for learning,
+      projects and technical
+      development.
+    </p>
+
+  </div>
+
+
+  <div class="feature">
+
+    <div class="feature-icon">
+      ✓
+    </div>
+
+    <h3>
+      Career Guidance
+    </h3>
+
+    <p>
+      Prepare for interviews,
+      career questions and
+      everyday technical needs.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     PUBLIC INFORMATION + AUTH
+===================================================== -->
+
+<section
+  class="auth-wrap"
+  id="login"
+>
+
+
+  <!-- PUBLIC INFORMATION -->
+
+  <div class="info-card">
+
+    <h2>
+      Welcome to VYNTRA AI
+    </h2>
+
+
+    <p>
+      VYNTRA AI provides a secure AI assistant
+      experience for approved users.
+    </p>
+
+
+    <p>
+      Users can request access, wait for administrator
+      approval, and then sign in to use the AI assistant.
+    </p>
+
+
+    <ul>
+
+      <li>
+        Programming and technical assistance
+      </li>
+
+      <li>
+        IT infrastructure and networking
+      </li>
+
+      <li>
+        Cloud learning and project development
+      </li>
+
+      <li>
+        Technical interview preparation
+      </li>
+
+      <li>
+        Career guidance and everyday questions
+      </li>
+
+    </ul>
+
+
+    <p>
+      Access to the assistant is restricted to
+      approved users.
+    </p>
+
+
+    <a
+      href="privacy.html"
+      style="
+        color:#a78bfa;
+        text-decoration:none;
+        font-weight:700;
+      "
+    >
+      Read our Privacy Policy →
+    </a>
+
+  </div>
+
+
+  <!-- ===================================================
+       AUTH CARD
+  ==================================================== -->
+
+  <div class="card">
+
+    <div class="auth-logo">
+      V
+    </div>
+
+
+    <h2 class="auth-title">
+      VYNTRA AI
+    </h2>
+
+
+    <div class="sub">
+      Secure access to your AI assistant
+    </div>
+
+
+    <!-- LOGIN VIEW -->
+
+    <section id="loginView">
+
+      <div id="googleBtn"></div>
+
+
+      <div class="divider">
+        OR
+      </div>
+
+
+      <input
+        id="identifier"
+        placeholder="Email or Mobile Number"
+        autocomplete="username"
+      >
+
+
+      <input
+        id="password"
+        type="password"
+        placeholder="Password"
+        autocomplete="current-password"
+      >
+
+
+      <button
+        id="loginButton"
+        class="btn primary"
+        onclick="login()"
+      >
+        Sign In
+      </button>
+
+
+      <div
+        class="link"
+        onclick="showSignup()"
+      >
+        Don't have an account? Create Account
+      </div>
+
+    </section>
+
+
+    <!-- SIGNUP VIEW -->
+
+    <section
+      id="signupView"
+      class="hidden"
+    >
+
+      <input
+        id="name"
+        placeholder="Full Name"
+        autocomplete="name"
+      >
+
+
+      <input
+        id="email"
+        type="email"
+        placeholder="Email Address"
+        autocomplete="email"
+      >
+
+
+      <input
+        id="mobile"
+        inputmode="numeric"
+        maxlength="10"
+        placeholder="10-digit Mobile Number"
+        autocomplete="tel"
+      >
+
+
+      <input
+        id="signupPassword"
+        type="password"
+        placeholder="Create Password (8+ characters)"
+        autocomplete="new-password"
+      >
+
+
+      <button
+        id="signupButton"
+        class="btn primary"
+        onclick="signup()"
+      >
+        Request Access
+      </button>
+
+
+      <div
+        class="link"
+        onclick="showLogin()"
+      >
+        Already have an account? Sign In
+      </div>
+
+    </section>
+
+
+    <!-- MESSAGE -->
+
+    <div
+      id="msg"
+      class="msg"
+    ></div>
+
+
+    <!-- EMAIL STATUS -->
+
+    <div
+      id="emailStatus"
+      class="status-box"
+    ></div>
+
+
+    <div class="small">
+      Only approved users can access VYNTRA AI.
+    </div>
+
+
+    <div class="small">
+
+      Admin?
+
+      <a
+        href="admin.html"
+        style="color:#9d8aff"
+      >
+        Admin Login
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+  © 2026 VYNTRA AI
+
+  <div class="footer-links">
+
+    <a href="privacy.html">
+      Privacy Policy
+    </a>
+
+    <a href="#about">
+      About VYNTRA AI
+    </a>
+
+  </div>
+
+</footer>
+
+</main>
 
 
 <script>
@@ -465,10 +1105,6 @@ const API_URL =
 const GOOGLE_CLIENT_ID =
   "987653531209-fo7pihl6082a6ibts8utnf2fdkqnqc4a.apps.googleusercontent.com";
 
-
-/* =========================================================
-   HELPER
-========================================================= */
 
 const $ =
   id =>
@@ -501,7 +1137,7 @@ function message(
 
 
 /* =========================================================
-   CLEAR EMAIL STATUS
+   EMAIL STATUS
 ========================================================= */
 
 function clearEmailStatus(){
@@ -516,10 +1152,6 @@ function clearEmailStatus(){
     "status-box";
 }
 
-
-/* =========================================================
-   SHOW EMAIL STATUS
-========================================================= */
 
 function showEmailStatus(
   text,
@@ -545,7 +1177,7 @@ function showEmailStatus(
 
 
 /* =========================================================
-   CLEAR ALL OLD UI STATE
+   CLEAR OLD STATE
 ========================================================= */
 
 function clearOldState(){
@@ -555,16 +1187,12 @@ function clearOldState(){
   clearEmailStatus();
 
 
-  /* LOGIN */
-
   $("identifier").value =
     "";
 
   $("password").value =
     "";
 
-
-  /* SIGNUP */
 
   $("name").value =
     "";
@@ -578,8 +1206,6 @@ function clearOldState(){
   $("signupPassword").value =
     "";
 
-
-  /* Reset buttons */
 
   $("loginButton").disabled =
     false;
@@ -685,7 +1311,7 @@ async function post(
 
 
 /* =========================================================
-   SIGNUP / REQUEST ACCESS
+   SIGNUP
 ========================================================= */
 
 async function signup(){
@@ -715,8 +1341,6 @@ async function signup(){
 
   clearEmailStatus();
 
-
-  /* VALIDATION */
 
   if(
     !name ||
@@ -837,9 +1461,7 @@ async function signup(){
           "success"
         );
 
-      }
-
-      else if(
+      }else if(
         data.emailSent ===
         false
       ){
@@ -855,22 +1477,14 @@ async function signup(){
           data.emailError
         );
 
-      }
-
-      else{
+      }else{
 
         showEmailStatus(
           "Your access request has been submitted. Please wait for administrator approval.",
           "success"
         );
-
       }
 
-
-      /*
-        Stay on page.
-        Do not immediately switch to login.
-      */
 
       return;
     }
@@ -917,7 +1531,6 @@ async function signup(){
 
     button.disabled =
       false;
-
 
     button.textContent =
       "Request Access";
@@ -1041,7 +1654,6 @@ async function login(){
         true
       );
 
-
       return;
     }
 
@@ -1055,7 +1667,6 @@ async function login(){
         data.error ||
         "Your access request was denied."
       );
-
 
       return;
     }
@@ -1085,7 +1696,6 @@ async function login(){
     button.disabled =
       false;
 
-
     button.textContent =
       "Sign In";
   }
@@ -1093,7 +1703,7 @@ async function login(){
 
 
 /* =========================================================
-   GOOGLE INITIALIZATION
+   GOOGLE
 ========================================================= */
 
 function initGoogle(){
@@ -1134,21 +1744,13 @@ function initGoogle(){
     $("googleBtn"),
 
     {
-      theme:
-        "outline",
-
-      size:
-        "large",
-
-      width:
-        360,
-
-      text:
-        "continue_with",
-
-      shape:
-        "pill"
+      theme:"outline",
+      size:"large",
+      width:360,
+      text:"continue_with",
+      shape:"pill"
     }
+
   );
 }
 
@@ -1202,8 +1804,6 @@ async function handleGoogle(
     );
 
 
-    /* APPROVED */
-
     if(data.success){
 
       localStorage.setItem(
@@ -1238,8 +1838,6 @@ async function handleGoogle(
     }
 
 
-    /* PENDING */
-
     if(
       data.status ===
       "pending"
@@ -1266,8 +1864,6 @@ async function handleGoogle(
       return;
     }
 
-
-    /* DENIED */
 
     if(
       data.status ===
@@ -1312,7 +1908,7 @@ async function handleGoogle(
 
 
 /* =========================================================
-   PAGE LOAD
+   RESET ON LOAD
 ========================================================= */
 
 function resetPage(){
@@ -1323,9 +1919,9 @@ function resetPage(){
 }
 
 
-/*
-  Normal page load
-*/
+/* =========================================================
+   NORMAL LOAD
+========================================================= */
 
 window.addEventListener(
   "load",
@@ -1339,9 +1935,9 @@ window.addEventListener(
 );
 
 
-/*
-  Back / forward browser restore
-*/
+/* =========================================================
+   BACK / FORWARD RESTORE
+========================================================= */
 
 window.addEventListener(
   "pageshow",
@@ -1353,10 +1949,9 @@ window.addEventListener(
 );
 
 
-/*
-  When the page is shown from browser cache,
-  clear stale success/error state.
-*/
+/* =========================================================
+   PAGE HIDE
+========================================================= */
 
 window.addEventListener(
   "pagehide",
