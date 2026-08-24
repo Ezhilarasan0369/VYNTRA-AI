@@ -3,11 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>VYNTRA AI</title>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script
+  src="https://accounts.google.com/gsi/client"
+  async
+  defer
+></script>
 
 <style>
+
 *{
   box-sizing:border-box;
 }
@@ -25,29 +31,51 @@ body{
 .bg{
   position:fixed;
   inset:0;
+
   background:
-    radial-gradient(circle at 50% 10%,#39206d 0,#12162b 35%,#080b14 72%);
+    radial-gradient(
+      circle at 50% 10%,
+      #39206d 0,
+      #12162b 35%,
+      #080b14 72%
+    );
+
   z-index:-1;
 }
 
 .card{
   width:min(460px,92vw);
+
   padding:34px;
+
   border:1px solid #30364d;
   border-radius:28px;
+
   background:rgba(18,22,38,.9);
-  box-shadow:0 25px 80px rgba(0,0,0,.45);
+
+  box-shadow:
+    0 25px 80px rgba(0,0,0,.45);
 }
 
 .logo{
   width:68px;
   height:68px;
+
   border-radius:20px;
+
   display:grid;
   place-items:center;
-  background:linear-gradient(135deg,#6d4aff,#8f5cff);
+
+  background:
+    linear-gradient(
+      135deg,
+      #6d4aff,
+      #8f5cff
+    );
+
   font-size:34px;
   font-weight:800;
+
   margin:auto;
 }
 
@@ -65,13 +93,18 @@ h1{
 
 input{
   width:100%;
+
   padding:15px 16px;
   margin:7px 0;
+
   border:1px solid #353b53;
   border-radius:14px;
+
   background:#101423;
   color:#fff;
+
   font-size:15px;
+
   outline:none;
 }
 
@@ -81,12 +114,16 @@ input:focus{
 
 .btn{
   width:100%;
+
   border:0;
   border-radius:14px;
+
   padding:15px;
   margin-top:10px;
+
   font-weight:700;
   font-size:15px;
+
   cursor:pointer;
 }
 
@@ -116,29 +153,39 @@ input:focus{
   display:flex;
   align-items:center;
   gap:12px;
+
   color:#727b92;
+
   margin:20px 0;
 }
 
 .divider:before,
 .divider:after{
   content:"";
+
   height:1px;
+
   background:#30364a;
+
   flex:1;
 }
 
 #googleBtn{
   display:flex;
   justify-content:center;
+
   min-height:44px;
 }
 
 .msg{
   min-height:22px;
+
   margin-top:14px;
+
   text-align:center;
+
   color:#ff9f9f;
+
   line-height:1.5;
 }
 
@@ -152,8 +199,11 @@ input:focus{
 
 .small{
   text-align:center;
+
   color:#737c92;
+
   font-size:13px;
+
   margin-top:18px;
 }
 
@@ -163,35 +213,59 @@ input:focus{
 
 .status-box{
   margin-top:14px;
+
   padding:12px 14px;
+
   border-radius:12px;
+
   font-size:13px;
+
   line-height:1.5;
+
   display:none;
 }
 
 .status-success{
   display:block;
+
   color:#86efac;
-  background:rgba(34,197,94,.08);
-  border:1px solid rgba(34,197,94,.18);
+
+  background:
+    rgba(34,197,94,.08);
+
+  border:
+    1px solid
+    rgba(34,197,94,.18);
 }
 
 .status-warning{
   display:block;
+
   color:#fbbf24;
-  background:rgba(245,158,11,.08);
-  border:1px solid rgba(245,158,11,.18);
+
+  background:
+    rgba(245,158,11,.08);
+
+  border:
+    1px solid
+    rgba(245,158,11,.18);
 }
 
 .status-error{
   display:block;
+
   color:#fca5a5;
-  background:rgba(239,68,68,.08);
-  border:1px solid rgba(239,68,68,.18);
+
+  background:
+    rgba(239,68,68,.08);
+
+  border:
+    1px solid
+    rgba(239,68,68,.18);
 }
 
 @media(max-width:500px){
+
   .card{
     padding:26px 20px;
   }
@@ -199,8 +273,11 @@ input:focus{
   h1{
     font-size:27px;
   }
+
 }
+
 </style>
+
 </head>
 
 <body>
@@ -209,9 +286,17 @@ input:focus{
 
 <div class="card">
 
-  <div class="logo">V</div>
+  <!-- LOGO -->
 
-  <h1>VYNTRA AI</h1>
+  <div class="logo">
+    V
+  </div>
+
+
+  <h1>
+    VYNTRA AI
+  </h1>
+
 
   <div class="sub">
     Secure access to your AI assistant
@@ -226,15 +311,18 @@ input:focus{
 
     <div id="googleBtn"></div>
 
+
     <div class="divider">
       OR
     </div>
+
 
     <input
       id="identifier"
       placeholder="Email or Mobile Number"
       autocomplete="username"
     >
+
 
     <input
       id="password"
@@ -243,6 +331,7 @@ input:focus{
       autocomplete="current-password"
     >
 
+
     <button
       id="loginButton"
       class="btn primary"
@@ -250,6 +339,7 @@ input:focus{
     >
       Sign In
     </button>
+
 
     <div
       class="link"
@@ -276,12 +366,14 @@ input:focus{
       autocomplete="name"
     >
 
+
     <input
       id="email"
       type="email"
       placeholder="Email Address"
       autocomplete="email"
     >
+
 
     <input
       id="mobile"
@@ -291,12 +383,14 @@ input:focus{
       autocomplete="tel"
     >
 
+
     <input
       id="signupPassword"
       type="password"
       placeholder="Create Password (8+ characters)"
       autocomplete="new-password"
     >
+
 
     <button
       id="signupButton"
@@ -305,6 +399,7 @@ input:focus{
     >
       Request Access
     </button>
+
 
     <div
       class="link"
@@ -317,7 +412,7 @@ input:focus{
 
 
   <!-- =====================================================
-       MESSAGE
+       GENERAL MESSAGE
   ====================================================== -->
 
   <div
@@ -340,14 +435,18 @@ input:focus{
     Only approved users can access VYNTRA AI.
   </div>
 
+
   <div class="small">
+
     Admin?
+
     <a
       href="admin.html"
       style="color:#9d8aff"
     >
       Admin Login
     </a>
+
   </div>
 
 </div>
@@ -355,20 +454,30 @@ input:focus{
 
 <script>
 
+/* =========================================================
+   API CONFIG
+========================================================= */
+
 const API_URL =
   "https://vyntra-ai-api.ezhilarasanpofficial.workers.dev";
+
 
 const GOOGLE_CLIENT_ID =
   "987653531209-fo7pihl6082a6ibts8utnf2fdkqnqc4a.apps.googleusercontent.com";
 
 
 /* =========================================================
-   HELPERS
+   HELPER
 ========================================================= */
 
-const $ = id =>
-  document.getElementById(id);
+const $ =
+  id =>
+    document.getElementById(id);
 
+
+/* =========================================================
+   MESSAGE
+========================================================= */
 
 function message(
   text,
@@ -376,7 +485,8 @@ function message(
   warning = false
 ){
 
-  $("msg").textContent = text;
+  $("msg").textContent =
+    text;
 
   $("msg").className =
     "msg" +
@@ -390,17 +500,26 @@ function message(
 }
 
 
+/* =========================================================
+   CLEAR EMAIL STATUS
+========================================================= */
+
 function clearEmailStatus(){
 
   const box =
     $("emailStatus");
 
-  box.textContent = "";
+  box.textContent =
+    "";
 
   box.className =
     "status-box";
 }
 
+
+/* =========================================================
+   SHOW EMAIL STATUS
+========================================================= */
 
 function showEmailStatus(
   text,
@@ -410,7 +529,8 @@ function showEmailStatus(
   const box =
     $("emailStatus");
 
-  box.textContent = text;
+  box.textContent =
+    text;
 
   box.className =
     "status-box " +
@@ -424,21 +544,84 @@ function showEmailStatus(
 }
 
 
+/* =========================================================
+   CLEAR ALL OLD UI STATE
+========================================================= */
+
+function clearOldState(){
+
+  message("");
+
+  clearEmailStatus();
+
+
+  /* LOGIN */
+
+  $("identifier").value =
+    "";
+
+  $("password").value =
+    "";
+
+
+  /* SIGNUP */
+
+  $("name").value =
+    "";
+
+  $("email").value =
+    "";
+
+  $("mobile").value =
+    "";
+
+  $("signupPassword").value =
+    "";
+
+
+  /* Reset buttons */
+
+  $("loginButton").disabled =
+    false;
+
+  $("loginButton").textContent =
+    "Sign In";
+
+
+  $("signupButton").disabled =
+    false;
+
+  $("signupButton").textContent =
+    "Request Access";
+}
+
+
+/* =========================================================
+   SHOW SIGNUP
+========================================================= */
+
 function showSignup(){
 
   $("loginView")
     .classList
     .add("hidden");
 
+
   $("signupView")
     .classList
     .remove("hidden");
 
+
   message("");
 
   clearEmailStatus();
+
 }
 
+
+/* =========================================================
+   SHOW LOGIN
+========================================================= */
 
 function showLogin(){
 
@@ -446,13 +629,16 @@ function showLogin(){
     .classList
     .add("hidden");
 
+
   $("loginView")
     .classList
     .remove("hidden");
 
+
   message("");
 
   clearEmailStatus();
+
 }
 
 
@@ -467,7 +653,8 @@ async function post(
 
   const response =
     await fetch(
-      API_URL + path,
+      API_URL +
+      path,
       {
         method:"POST",
 
@@ -481,10 +668,14 @@ async function post(
       }
     );
 
+
   const data =
     await response
       .json()
-      .catch(() => ({}));
+      .catch(
+        () => ({})
+      );
+
 
   return {
     response,
@@ -504,15 +695,18 @@ async function signup(){
       .value
       .trim();
 
+
   const email =
     $("email")
       .value
       .trim();
 
+
   const mobile =
     $("mobile")
       .value
       .trim();
+
 
   const password =
     $("signupPassword")
@@ -521,6 +715,8 @@ async function signup(){
 
   clearEmailStatus();
 
+
+  /* VALIDATION */
 
   if(
     !name ||
@@ -551,7 +747,9 @@ async function signup(){
 
 
   if(
-    !/^\d{10}$/.test(mobile)
+    !/^\d{10}$/.test(
+      mobile
+    )
   ){
 
     message(
@@ -578,7 +776,9 @@ async function signup(){
     $("signupButton");
 
 
-  button.disabled = true;
+  button.disabled =
+    true;
+
 
   button.textContent =
     "Submitting...";
@@ -607,19 +807,16 @@ async function signup(){
 
 
     console.log(
-      "SIGNUP HTTP STATUS:",
+      "SIGNUP STATUS:",
       response.status
     );
+
 
     console.log(
       "SIGNUP RESPONSE:",
       data
     );
 
-
-    /* -----------------------------------------
-       SUCCESS
-    ------------------------------------------ */
 
     if(data.success){
 
@@ -630,12 +827,9 @@ async function signup(){
       );
 
 
-      /* ---------------------------------------
-         EMAIL SUCCESS
-      ---------------------------------------- */
-
       if(
-        data.emailSent === true
+        data.emailSent ===
+        true
       ){
 
         showEmailStatus(
@@ -645,13 +839,9 @@ async function signup(){
 
       }
 
-
-      /* ---------------------------------------
-         EMAIL FAILED
-      ---------------------------------------- */
-
       else if(
-        data.emailSent === false
+        data.emailSent ===
+        false
       ){
 
         showEmailStatus(
@@ -667,11 +857,6 @@ async function signup(){
 
       }
 
-
-      /* ---------------------------------------
-         BACKWARD COMPATIBILITY
-      ---------------------------------------- */
-
       else{
 
         showEmailStatus(
@@ -683,18 +868,13 @@ async function signup(){
 
 
       /*
-        IMPORTANT:
-        Don't immediately move back to login.
-        Keep the status visible so you can test.
+        Stay on page.
+        Do not immediately switch to login.
       */
 
       return;
     }
 
-
-    /* -----------------------------------------
-       SERVER ERROR
-    ------------------------------------------ */
 
     message(
       data.error ||
@@ -710,7 +890,6 @@ async function signup(){
         data.emailError,
         "error"
       );
-
     }
 
 
@@ -736,12 +915,13 @@ async function signup(){
 
   }finally{
 
-    button.disabled = false;
+    button.disabled =
+      false;
+
 
     button.textContent =
       "Request Access";
   }
-
 }
 
 
@@ -755,6 +935,7 @@ async function login(){
     $("identifier")
       .value
       .trim();
+
 
   const password =
     $("password")
@@ -781,7 +962,9 @@ async function login(){
     $("loginButton");
 
 
-  button.disabled = true;
+  button.disabled =
+    true;
+
 
   button.textContent =
     "Signing In...";
@@ -795,7 +978,6 @@ async function login(){
   try{
 
     const {
-      response,
       data
     } =
       await post(
@@ -820,6 +1002,7 @@ async function login(){
         JSON.stringify(data)
       );
 
+
       localStorage.removeItem(
         "vyntra_user"
       );
@@ -832,9 +1015,12 @@ async function login(){
 
 
       setTimeout(
-        () =>
+        () => {
+
           location.href =
-            "chat.html",
+            "chat.html";
+
+        },
         500
       );
 
@@ -855,6 +1041,7 @@ async function login(){
         true
       );
 
+
       return;
     }
 
@@ -868,6 +1055,7 @@ async function login(){
         data.error ||
         "Your access request was denied."
       );
+
 
       return;
     }
@@ -894,17 +1082,18 @@ async function login(){
 
   }finally{
 
-    button.disabled = false;
+    button.disabled =
+      false;
+
 
     button.textContent =
       "Sign In";
   }
-
 }
 
 
 /* =========================================================
-   GOOGLE LOGIN
+   GOOGLE INITIALIZATION
 ========================================================= */
 
 function initGoogle(){
@@ -915,10 +1104,12 @@ function initGoogle(){
     !window.google.accounts.id
   ){
 
-    return setTimeout(
+    setTimeout(
       initGoogle,
       500
     );
+
+    return;
   }
 
 
@@ -935,7 +1126,6 @@ function initGoogle(){
 
     cancel_on_tap_outside:
       true
-
   });
 
 
@@ -959,14 +1149,12 @@ function initGoogle(){
       shape:
         "pill"
     }
-
   );
-
 }
 
 
 /* =========================================================
-   GOOGLE AUTH HANDLER
+   GOOGLE AUTH
 ========================================================= */
 
 async function handleGoogle(
@@ -1014,9 +1202,7 @@ async function handleGoogle(
     );
 
 
-    /* -----------------------------------------
-       APPROVED
-    ------------------------------------------ */
+    /* APPROVED */
 
     if(data.success){
 
@@ -1024,6 +1210,7 @@ async function handleGoogle(
         "vyntraUser",
         JSON.stringify(data)
       );
+
 
       localStorage.removeItem(
         "vyntra_user"
@@ -1037,9 +1224,12 @@ async function handleGoogle(
 
 
       setTimeout(
-        () =>
+        () => {
+
           location.href =
-            "chat.html",
+            "chat.html";
+
+        },
         500
       );
 
@@ -1048,9 +1238,7 @@ async function handleGoogle(
     }
 
 
-    /* -----------------------------------------
-       PENDING
-    ------------------------------------------ */
+    /* PENDING */
 
     if(
       data.status ===
@@ -1066,8 +1254,12 @@ async function handleGoogle(
 
 
       showEmailStatus(
-        "Your access request is pending administrator approval.",
-        "warning"
+        data.emailSent === true
+          ? "✓ Your access request was sent to the administrator."
+          : "Your access request is pending administrator approval.",
+        data.emailSent === true
+          ? "success"
+          : "warning"
       );
 
 
@@ -1075,9 +1267,7 @@ async function handleGoogle(
     }
 
 
-    /* -----------------------------------------
-       DENIED
-    ------------------------------------------ */
+    /* DENIED */
 
     if(
       data.status ===
@@ -1109,7 +1299,7 @@ async function handleGoogle(
   }catch(error){
 
     console.error(
-      "Google login error:",
+      "GOOGLE LOGIN ERROR:",
       error
     );
 
@@ -1117,9 +1307,7 @@ async function handleGoogle(
     message(
       "Cannot connect to VYNTRA AI API."
     );
-
   }
-
 }
 
 
@@ -1127,11 +1315,56 @@ async function handleGoogle(
    PAGE LOAD
 ========================================================= */
 
+function resetPage(){
+
+  clearOldState();
+
+  showLogin();
+}
+
+
+/*
+  Normal page load
+*/
+
 window.addEventListener(
   "load",
   () => {
 
+    resetPage();
+
     initGoogle();
+
+  }
+);
+
+
+/*
+  Back / forward browser restore
+*/
+
+window.addEventListener(
+  "pageshow",
+  () => {
+
+    resetPage();
+
+  }
+);
+
+
+/*
+  When the page is shown from browser cache,
+  clear stale success/error state.
+*/
+
+window.addEventListener(
+  "pagehide",
+  () => {
+
+    message("");
+
+    clearEmailStatus();
 
   }
 );
