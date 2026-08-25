@@ -1614,6 +1614,25 @@ body.light .settings-option{border-bottom-color:#e3e5eb}body.light .settings-cho
 body.light .settings-choice:hover,body.light .help-chip:hover{background:#e5e8ee}body.light .help-textarea{background:#f7f8fa;border-color:#d9dce5;color:#17191d}
 body.light .activity-entry{background:#f7f8fa;border-color:#dfe2e9}body.light .activity-entry:hover{background:#eef0f5}
 
+
+
+/* =========================================================
+   PROFILE / ACCOUNT MODAL
+========================================================= */
+.profile-clickable{cursor:pointer;transition:transform .2s ease,opacity .2s ease}
+.profile-clickable:hover{transform:translateY(-1px);opacity:.96}
+.account-card{max-width:460px}
+.account-grid{display:grid;gap:12px;margin-top:18px}
+.account-row{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;padding:13px 14px;border:1px solid #2d3038;background:#1a1c22;border-radius:12px}
+.account-label{color:#8f94a0;font-size:13px}
+.account-value{color:#f2f3f6;font-size:14px;font-weight:600;overflow-wrap:anywhere}
+.account-note{margin-top:14px;color:#8b909b;font-size:12px;line-height:1.5}
+body.light .account-row{background:#f3f4f7;border-color:#dfe2e8}
+body.light .account-value{color:#17191d}
+body.light .account-label{color:#6f7480}
+body.light .account-note{color:#707580}
+@media(max-width:600px){.account-row{grid-template-columns:90px 1fr}}
+
 </style>
 </head>
 
@@ -1718,6 +1737,34 @@ body.light .activity-entry{background:#f7f8fa;border-color:#dfe2e9}body.light .a
     <div class="settings-option" style="border-bottom:0"><div class="settings-label"><strong>Account</strong><span>Sign out from this account.</span></div><button class="logout-btn" id="logoutBtn">Logout</button></div>
   </div>
 </div>
+<div class="vyntra-modal" id="accountModal">
+  <div class="vyntra-modal-card account-card">
+    <button class="vyntra-modal-close" data-close="accountModal">×</button>
+    <h2>Account Details</h2>
+    <div class="vyntra-modal-sub">Details for the account currently signed in to VYNTRA AI.</div>
+
+    <div class="account-grid">
+      <div class="account-row">
+        <div class="account-label">Name</div>
+        <div class="account-value" id="accountName">User</div>
+      </div>
+      <div class="account-row">
+        <div class="account-label">Email</div>
+        <div class="account-value" id="accountEmail">Not available</div>
+      </div>
+      <div class="account-row">
+        <div class="account-label">Mobile</div>
+        <div class="account-value" id="accountMobile">Not available</div>
+      </div>
+      <div class="account-row">
+        <div class="account-label">Password</div>
+        <div class="account-value" id="accountPassword">••••••••</div>
+      </div>
+    </div>
+
+    <div class="account-note">For security, the actual password is never displayed in the account panel.</div>
+  </div>
+</div>
 <div class="vyntra-modal" id="helpModal">
   <div class="vyntra-modal-card">
     <button class="vyntra-modal-close" data-close="helpModal">×</button>
@@ -1782,12 +1829,15 @@ body.light .activity-entry{background:#f7f8fa;border-color:#dfe2e9}body.light .a
                 ↻
             </button>
 
-            <div
-                class="header-avatar"
+            <button
+                class="header-avatar profile-clickable"
                 id="headerAvatar"
+                type="button"
+                title="Account"
+                aria-label="Open account details"
             >
                 E
-            </div>
+            </button>
 
         </div>
 
@@ -3782,14 +3832,24 @@ updateScrollButton();
   const pa=document.getElementById("profileAvatar"); if(pa) pa.textContent=letter;
   const ha=document.getElementById("headerAvatar"); if(ha) ha.textContent=letter;
 
+  /* Account details */
+  const accountName = String(user?.name || user?.user?.name || user?.profile?.name || "User").trim() || "User";
+  const accountEmail = String(user?.email || user?.user?.email || user?.profile?.email || "Not available").trim() || "Not available";
+  const accountMobile = String(user?.mobile || user?.user?.mobile || user?.profile?.mobile || user?.phone || "Not available").trim() || "Not available";
+  const accountNameEl=document.getElementById("accountName"); if(accountNameEl) accountNameEl.textContent=accountName;
+  const accountEmailEl=document.getElementById("accountEmail"); if(accountEmailEl) accountEmailEl.textContent=accountEmail;
+  const accountMobileEl=document.getElementById("accountMobile"); if(accountMobileEl) accountMobileEl.textContent=accountMobile;
+  const accountPasswordEl=document.getElementById("accountPassword"); if(accountPasswordEl) accountPasswordEl.textContent="••••••••";
+
   /* Settings */
   const settingsModal=document.getElementById("settingsModal");
+  const accountModal=document.getElementById("accountModal");
   const helpModal=document.getElementById("helpModal");
   const activityModal=document.getElementById("activityModal");
   const open=(m)=>m&&m.classList.add("show");
   const close=(m)=>m&&m.classList.remove("show");
   document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>close(document.getElementById(b.dataset.close)));
-  [settingsModal,helpModal,activityModal].forEach(m=>{if(m)m.onclick=e=>{if(e.target===m)close(m)}});
+  [settingsModal,accountModal,helpModal,activityModal].forEach(m=>{if(m)m.onclick=e=>{if(e.target===m)close(m)}});
 
   function theme(){return localStorage.getItem(themeKey)||"dark"}
   function applyTheme(t){document.body.classList.toggle("light",t==="light");localStorage.setItem(themeKey,t);updateThemeButtons()}
@@ -3798,6 +3858,7 @@ updateScrollButton();
     document.getElementById("darkModeBtn")?.classList.toggle("active",t!=="light");
     document.getElementById("lightModeBtn")?.classList.toggle("active",t==="light");
   }
+  document.getElementById("headerAvatar")?.addEventListener("click",()=>{open(accountModal);closeMobileSidebar()});
   document.getElementById("settingsBtn")?.addEventListener("click",()=>{updateThemeButtons();open(settingsModal);closeMobileSidebar()});
   document.getElementById("darkModeBtn")?.addEventListener("click",()=>applyTheme("dark"));
   document.getElementById("lightModeBtn")?.addEventListener("click",()=>applyTheme("light"));
