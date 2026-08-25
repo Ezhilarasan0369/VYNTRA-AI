@@ -1912,17 +1912,83 @@ async function signup(){
 
     if(data.success){
 
+      /*
+        IMPORTANT:
+        Show only one state/message for each signup result.
+        Older UI could show "already approved" together with
+        "request submitted" because status was not handled.
+      */
+
+      const status =
+        String(data.status || "").toLowerCase();
+
+      // --------------------------------------------------------
+      // ALREADY APPROVED
+      // --------------------------------------------------------
+      if(status === "approved"){
+
+        message(
+          data.message ||
+          "This account is already approved. You can sign in.",
+          true
+        );
+
+        clearEmailStatus();
+
+        return;
+      }
+
+      // --------------------------------------------------------
+      // PENDING
+      // --------------------------------------------------------
+      if(status === "pending"){
+
+        message(
+          data.message ||
+          "Access request submitted. Please wait for administrator approval.",
+          true
+        );
+
+        if(data.emailSent === true){
+
+          showEmailStatus(
+            "✓ Access request submitted successfully. Admin notification email sent.",
+            "success"
+          );
+
+        }
+        else if(data.emailSent === false){
+
+          showEmailStatus(
+            "⚠ Access request was saved, but the admin notification email could not be sent.",
+            "warning"
+          );
+
+          console.error(
+            "ADMIN EMAIL ERROR:",
+            data.emailError
+          );
+
+        }
+        else{
+
+          clearEmailStatus();
+
+        }
+
+        return;
+      }
+
+      // --------------------------------------------------------
+      // FALLBACK SUCCESS
+      // --------------------------------------------------------
       message(
         data.message ||
         "Access request submitted.",
         true
       );
 
-
-      if(
-        data.emailSent ===
-        true
-      ){
+      if(data.emailSent === true){
 
         showEmailStatus(
           "✓ Access request submitted successfully. Admin notification email sent.",
@@ -1930,17 +1996,12 @@ async function signup(){
         );
 
       }
-
-      else if(
-        data.emailSent ===
-        false
-      ){
+      else if(data.emailSent === false){
 
         showEmailStatus(
           "⚠ Access request was saved, but the admin notification email could not be sent.",
           "warning"
         );
-
 
         console.error(
           "ADMIN EMAIL ERROR:",
@@ -1948,16 +2009,11 @@ async function signup(){
         );
 
       }
-
       else{
 
-        showEmailStatus(
-          "Your access request has been submitted. Please wait for administrator approval.",
-          "success"
-        );
+        clearEmailStatus();
 
       }
-
 
       return;
     }

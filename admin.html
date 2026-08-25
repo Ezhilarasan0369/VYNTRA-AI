@@ -1042,49 +1042,29 @@ async function loadUsers(){
 
   clearAlert();
 
+  const refresh = $("refreshBtn");
+  const oldText = refresh.textContent;
 
-  const refresh =
-    $("refreshBtn");
-
-  const oldText =
-    refresh.textContent;
-
-
-  refresh.disabled =
-    true;
-
-  refresh.textContent =
-    "↻ Loading...";
-
+  refresh.disabled = true;
+  refresh.textContent = "↻ Loading...";
 
   try{
 
-    const response =
-      await apiFetch(
-        "/admin/users",
-        {
-          method:"GET",
-
-          headers:{
-            "X-Admin-Secret":
-              secret()
-          }
+    const response = await apiFetch(
+      "/admin/users",
+      {
+        method:"GET",
+        headers:{
+          "X-Admin-Secret": secret()
         }
-      );
+      }
+    );
 
+    const data = await response
+      .json()
+      .catch(() => ({}));
 
-    const data =
-      await response
-        .json()
-        .catch(
-          () => ({})
-        );
-
-
-    if(
-      response.status ===
-      401
-    ){
+    if(response.status === 401){
 
       showLogin();
 
@@ -1094,28 +1074,81 @@ async function loadUsers(){
       return;
     }
 
+    /*
+      /admin/users is the correct endpoint for the complete
+      user list. If the deployed Worker is an older version
+      and does not have this endpoint, use /admin/pending so
+      the admin panel still remains usable.
+    */
+    if(response.ok){
 
-    if(!response.ok){
-
-      throw new Error(
-        data.error ||
-        "Failed to load users."
-      );
-    }
-
-
-    users =
-      Array.isArray(
-        data.users
-      )
+      users = Array.isArray(data.users)
         ? data.users
         : [];
 
+      updateStats();
+      render();
 
-    updateStats();
+      return;
+    }
 
-    render();
+    if(response.status === 404 || response.status === 405){
 
+      console.warn(
+        "VYNTRA AI: /admin/users is not available in the deployed Worker. Falling back to /admin/pending."
+      );
+
+      const fallback = await apiFetch(
+        "/admin/pending",
+        {
+          method:"GET",
+          headers:{
+            "X-Admin-Secret": secret()
+          }
+        }
+      );
+
+      const fallbackData = await fallback
+        .json()
+        .catch(() => ({}));
+
+      if(fallback.status === 401){
+
+        showLogin();
+
+        $("loginMessage").textContent =
+          "Admin session expired. Please login again.";
+
+        return;
+      }
+
+      if(fallback.ok){
+
+        users = Array.isArray(fallbackData.users)
+          ? fallbackData.users
+          : [];
+
+        updateStats();
+        render();
+
+        alertMsg(
+          "Worker is using the older /admin/pending endpoint. Deploy the latest Worker to show all users.",
+          "bad"
+        );
+
+        return;
+      }
+
+      throw new Error(
+        fallbackData.error ||
+        "Unable to load pending users."
+      );
+    }
+
+    throw new Error(
+      data.error ||
+      "Failed to load users."
+    );
 
   }catch(error){
 
@@ -1124,91 +1157,15 @@ async function loadUsers(){
       error
     );
 
-
-    /*
-      Fallback:
-      if /admin/users isn't available,
-      show pending users instead.
-    */
-
-    try{
-
-      const fallback =
-        await apiFetch(
-          "/admin/pending",
-          {
-            method:"GET",
-
-            headers:{
-              "X-Admin-Secret":
-                secret()
-            }
-          }
-        );
-
-
-      const fallbackData =
-        await fallback
-          .json()
-          .catch(
-            () => ({})
-          );
-
-
-      if(
-        fallback.ok
-      ){
-
-        users =
-          Array.isArray(
-            fallbackData.users
-          )
-            ? fallbackData.users
-            : [];
-
-
-        updateStats();
-
-        render();
-
-
-        alertMsg(
-          "Showing pending users. All-user history endpoint is unavailable.",
-          "bad"
-        );
-
-
-        return;
-      }
-
-
-    }catch(fallbackError){
-
-      console.error(
-        "FALLBACK ERROR:",
-        fallbackError
-      );
-    }
-
-
-    $("tableArea").innerHTML =
-      `
-        <div class="empty">
-
-          <h3>
-            Unable to load users
-          </h3>
-
-          <p>
-            ${esc(
-              error.message ||
-              "Failed to fetch."
-            )}
-          </p>
-
-        </div>
-      `;
-
+    $("tableArea").innerHTML = `
+      <div class="empty">
+        <h3>Unable to load users</h3>
+        <p>${esc(
+          error.message ||
+          "Failed to fetch VYNTRA AI API."
+        )}</p>
+      </div>
+    `;
 
     alertMsg(
       error.message ||
@@ -1216,14 +1173,11 @@ async function loadUsers(){
       "bad"
     );
 
-
   }finally{
 
-    refresh.disabled =
-      false;
+    refresh.disabled = false;
+    refresh.textContent = oldText;
 
-    refresh.textContent =
-      oldText;
   }
 }
 
