@@ -1633,6 +1633,32 @@ body.light .account-label{color:#6f7480}
 body.light .account-note{color:#707580}
 @media(max-width:600px){.account-row{grid-template-columns:90px 1fr}}
 
+
+/* =========================================================
+   VYNTRA AI COMPLETE FEATURE PACK
+========================================================= */
+.feature-toolbar{position:absolute;right:18px;bottom:calc(100% + 8px);display:none;gap:6px;flex-wrap:wrap;max-width:min(520px,90vw);padding:9px;border:1px solid #30333b;border-radius:14px;background:#17191f;box-shadow:0 18px 40px rgba(0,0,0,.35);z-index:20}
+.feature-toolbar.show{display:flex}
+.feature-toolbar button{border:1px solid #363941;background:#202229;color:#dddfe5;border-radius:9px;padding:8px 10px;font-size:12px;cursor:pointer}
+.feature-toolbar button:hover,.feature-toolbar button.active{background:#7050ff;border-color:#8065ff;color:#fff}
+.attach-chip{display:none;align-items:center;gap:8px;width:min(900px,100%);margin:0 auto 6px;padding:8px 11px;border:1px solid #343740;border-radius:10px;background:#17191f;color:#c7c9d1;font-size:12px}
+.attach-chip.show{display:flex}.attach-chip button{margin-left:auto;border:0;background:transparent;color:#aaa;cursor:pointer}
+.recent-group-title{padding:10px 10px 5px;color:#707581;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.recent-row{position:relative;display:flex;align-items:center;gap:7px;margin:1px 0}.recent-row .recent-item{flex:1;min-width:0}
+.recent-menu-btn{width:28px;height:38px;border:0;border-radius:8px;background:transparent;color:#777b85;cursor:pointer}.recent-menu-btn:hover{background:#23252c;color:#fff}
+.chat-menu{position:fixed;display:none;min-width:150px;padding:5px;border:1px solid #353842;border-radius:12px;background:#1a1c22;box-shadow:0 16px 40px rgba(0,0,0,.4);z-index:150}
+.chat-menu.show{display:block}.chat-menu button{width:100%;padding:9px 10px;border:0;border-radius:8px;background:transparent;color:#e5e7eb;text-align:left;cursor:pointer}.chat-menu button:hover{background:#292c34}.chat-menu .danger{color:#ff9da5}
+.account-status{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:5px 9px;border-radius:999px;background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.18);color:#6ee7a3;font-size:11px;font-weight:700}
+.session-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.session-item{padding:11px;border-radius:10px;background:#13151a;border:1px solid #2d3038}.session-item small{display:block;color:#818692;font-size:10px;margin-bottom:4px}.session-item strong{font-size:12px}
+.account-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.account-actions button{flex:1;border:1px solid #343740;background:#202229;color:#e1e3e8;border-radius:10px;padding:10px;cursor:pointer}.account-actions button:hover{background:#2b2e36}
+.speaking{background:#7050ff!important;color:#fff!important}
+@media(max-width:650px){.feature-toolbar{right:10px;left:10px;max-width:none}.session-grid{grid-template-columns:1fr}.recent-menu-btn{width:32px}}
+@media print{body *{visibility:hidden!important}.chat-area,.chat-area *{visibility:visible!important}.chat-area{position:static!important;overflow:visible!important;height:auto!important;padding:20px!important}.composer-wrap,.sidebar,.header,.scroll-down{display:none!important}.message-row{break-inside:avoid}}
+body.light .feature-toolbar{background:#fff;border-color:#dfe2e9}.body.light .feature-toolbar button{background:#f2f3f7;color:#343741}
+body.light .attach-chip{background:#fff;border-color:#dfe2e9;color:#343741}
+body.light .chat-menu{background:#fff;border-color:#dfe2e9}.body.light .chat-menu button{color:#343741}
+body.light .session-item{background:#f7f8fa;border-color:#dfe2e9}.body.light .account-actions button{background:#f0f2f6;color:#343741}
+
 </style>
 </head>
 
@@ -1762,6 +1788,16 @@ body.light .account-note{color:#707580}
       </div>
     </div>
 
+    <div class="account-status" id="accountStatus">● Approved User</div>
+    <div class="session-grid">
+      <div class="session-item"><small>Last login</small><strong id="accountLastLogin">This session</strong></div>
+      <div class="session-item"><small>Device</small><strong id="accountDevice">Browser</strong></div>
+    </div>
+    <div class="account-actions">
+      <button type="button" id="exportAllBtn">Export chats</button>
+      <button type="button" id="printChatBtn">Print / PDF</button>
+      <button type="button" id="accountLogoutBtn">Logout</button>
+    </div>
     <div class="account-note">For security, the actual password is never displayed in the account panel.</div>
   </div>
 </div>
@@ -1780,6 +1816,11 @@ body.light .account-note{color:#707580}
   <div class="vyntra-modal-card">
     <button class="vyntra-modal-close" data-close="activityModal">×</button>
     <h2>Activity</h2><div class="vyntra-modal-sub">Your conversations and searches on this account.</div>
+    <div class="account-actions" style="margin-top:0;margin-bottom:14px">
+      <button type="button" id="exportTxtBtn">Export TXT</button>
+      <button type="button" id="printAllBtn">Print / PDF</button>
+      <button type="button" id="clearChatsBtn">Clear all chats</button>
+    </div>
     <div class="activity-list" id="activityList"></div>
   </div>
 </div>
@@ -1873,7 +1914,23 @@ body.light .account-note{color:#707580}
          COMPOSER
     ================================================= -->
 
+    <div class="feature-toolbar" id="featureToolbar">
+        <button data-mode="fast" class="active">⚡ Fast</button>
+        <button data-mode="coding">💻 Coding</button>
+        <button data-mode="study">📚 Study</button>
+        <button data-mode="interview">💼 Interview</button>
+        <button data-mode="deep">🧠 Deep Think</button>
+        <button data-mode="image">🎨 Image</button>
+    </div>
+
+    <div class="chat-menu" id="chatMenu">
+        <button data-action="rename">✏ Rename</button>
+        <button data-action="export">⬇ Export chat</button>
+        <button data-action="delete" class="danger">🗑 Delete chat</button>
+    </div>
+
     <div class="composer-wrap">
+        <div class="attach-chip" id="attachChip"><span id="attachText">Attachment</span><button id="removeAttachment" type="button">×</button></div>
 
         <div
             class="image-preview"
@@ -2007,6 +2064,11 @@ body.light .account-note{color:#707580}
                     </svg>
 
                 </button>
+
+                <button class="icon-btn mode-btn" id="modeBtn" title="AI mode" type="button">⚡</button>
+
+                <button class="icon-btn" id="fileBtn" title="Attach file" type="button">📎</button>
+                <input id="fileInput" type="file" accept=".txt,.md,.json,.csv,.html,.js,.css,.java,.py,.pdf,.doc,.docx,image/*">
 
                 <!-- SEND / STOP -->
 
@@ -3300,9 +3362,7 @@ async function generateAI(text, regenerate=false){
     if(!text.trim()) return;
 
     currentPrompt = text.trim();
-    languageMode = detectLanguageStyle(currentPrompt) === "english" && conversation.length
-        ? (conversation.find(m => m.role === "user")?.content ? (chatStore.find(c=>c.id===currentChatId)?.language || "english") : "english")
-        : detectLanguageStyle(currentPrompt);
+    languageMode = detectLanguageStyle(currentPrompt);
 
     ensureCurrentChat();
     controller = new AbortController();
@@ -3912,6 +3972,70 @@ updateScrollButton();
   }catch(e){showWelcome()}
   if(typeof renderRecentChats==="function")renderRecentChats();
   renderActivity();
+})();
+</script>
+
+
+<script>
+/* =========================================================
+   VYNTRA AI COMPLETE FEATURE CONTROLLER
+========================================================= */
+(function(){
+  const $id = (id)=>document.getElementById(id);
+  const safeUser = (()=>{ try{return JSON.parse(localStorage.getItem("vyntraUser")||"null")}catch(e){return null} })();
+  const getName = ()=>String(safeUser?.name || safeUser?.user?.name || safeUser?.profile?.name || "User").trim() || "User";
+  const getEmail = ()=>String(safeUser?.email || safeUser?.user?.email || safeUser?.profile?.email || "Not available").trim();
+  const getMobile = ()=>String(safeUser?.mobile || safeUser?.user?.mobile || safeUser?.profile?.mobile || safeUser?.phone || "Not available").trim();
+  const modeBtn=$id("modeBtn"), toolbar=$id("featureToolbar"), fileBtn=$id("fileBtn"), fileInput=$id("fileInput"), attachChip=$id("attachChip"), attachText=$id("attachText"), removeAttachment=$id("removeAttachment");
+  let assistantMode="fast";
+  let attachedFile=null;
+  let attachedText="";
+  let activeMenuChat=null;
+  const modeInstructions={
+    fast:"Answer quickly and clearly. Keep the response concise but useful.",
+    coding:"Act as a coding assistant. Prefer correct, practical code with a short explanation.",
+    study:"Act as a patient tutor. Explain step by step with simple examples.",
+    interview:"Act as an interview coach. Give focused, interview-ready answers and follow-up questions.",
+    deep:"Think carefully about edge cases and trade-offs. Give a thorough, structured answer.",
+    image:"Treat this as an image-generation request. If image generation is unavailable, explain the limitation clearly instead of pretending an image was created."
+  };
+  function currentStore(){try{return Array.isArray(chatStore)?chatStore:JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY)||"[]")||[]}catch(e){return []}}
+  function persistStore(){try{saveChatStore()}catch(e){try{localStorage.setItem(CHAT_STORAGE_KEY,JSON.stringify(chatStore))}catch(_){}}}
+  function setWelcomeName(){const el=$id("welcomeName");if(el)el.textContent=getName();const pn=$id("profileName");if(pn)pn.textContent=getName();const i=(getName().charAt(0)||"U").toUpperCase();if($id("profileAvatar"))$id("profileAvatar").textContent=i;if($id("headerAvatar"))$id("headerAvatar").textContent=i}
+  function enhancedWelcome(){const name=escapeHTML(getName());messages.innerHTML=`<div class="welcome"><div class="welcome-logo">V</div><h1>Hello, <span id="welcomeName">${name}</span></h1><div class="welcome-sub">Your intelligent personal AI assistant. Ask questions, write code, learn, create and explore with VYNTRA AI.</div><div class="suggestions"><button class="suggestion" data-prompt="Create a professional portfolio website"><div class="suggestion-icon">◈</div><div class="suggestion-title">Create a professional portfolio website</div></button><button class="suggestion" data-prompt="Explain cloud computing in simple words"><div class="suggestion-icon">☁</div><div class="suggestion-title">Explain cloud computing in simple words</div></button><button class="suggestion" data-prompt="Help me prepare for a technical interview"><div class="suggestion-icon">✦</div><div class="suggestion-title">Help me prepare for a technical interview</div></button></div></div>`;if(typeof attachSuggestions==="function")attachSuggestions();setWelcomeName()}
+  showWelcome=enhancedWelcome;
+  function formatDate(iso){try{return new Date(iso).toLocaleString([],{dateStyle:"medium",timeStyle:"short"})}catch(e){return ""}}
+  function dayGroup(iso){const d=new Date(iso),n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate()),b=new Date(d.getFullYear(),d.getMonth(),d.getDate()),diff=Math.floor((a-b)/86400000);if(diff===0)return"Today";if(diff===1)return"Yesterday";if(diff<=7)return"Previous 7 days";return"Older"}
+  function enhancedRecent(){const box=$id("recentChats");if(!box)return;box.innerHTML="";const sorted=currentStore().slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0),);const groups={};sorted.slice(0,30).forEach(c=>{const g=dayGroup(c.updatedAt||c.createdAt);(groups[g]??=[]).push(c)});["Today","Yesterday","Previous 7 days","Older"].forEach(g=>{if(!groups[g]?.length)return;const t=document.createElement("div");t.className="recent-group-title";t.textContent=g;box.appendChild(t);groups[g].forEach(c=>{const r=document.createElement("div");r.className="recent-row";const item=document.createElement("div");item.className="recent-item"+(c.id===currentChatId?" active":"");item.innerHTML=`<span class="recent-icon">◌</span><span title="${escapeHTML(c.title||"Conversation")}">${escapeHTML(c.title||"Conversation")}</span>`;item.onclick=()=>loadChat(c.id);const m=document.createElement("button");m.className="recent-menu-btn";m.textContent="⋮";m.title="Chat options";m.onclick=e=>{e.stopPropagation();openChatMenu(c.id,m)};r.append(item,m);box.appendChild(r)})})}
+  renderRecentChats=enhancedRecent;
+  const chatMenu=$id("chatMenu");
+  function openChatMenu(id,anchor){activeMenuChat=id;if(!chatMenu)return;chatMenu.classList.add("show");const r=anchor.getBoundingClientRect();chatMenu.style.left=Math.min(window.innerWidth-170,r.right-150)+"px";chatMenu.style.top=(r.bottom+4)+"px"}
+  function closeChatMenu(){activeMenuChat=null;chatMenu?.classList.remove("show")}
+  document.addEventListener("click",e=>{if(chatMenu&&!chatMenu.contains(e.target)&&!e.target.closest(".recent-menu-btn"))closeChatMenu()});
+  chatMenu?.addEventListener("click",e=>{const b=e.target.closest("button[data-action]");if(!b||!activeMenuChat)return;const id=activeMenuChat;closeChatMenu();if(b.dataset.action==="rename"){const c=currentStore().find(x=>x.id===id);if(!c)return;const n=prompt("Rename chat",c.title||"Conversation");if(n?.trim()){c.title=n.trim().slice(0,80);persistStore();enhancedRecent();renderActivitySafe()}}else if(b.dataset.action==="delete"){if(confirm("Delete this chat?")){chatStore=currentStore().filter(x=>x.id!==id);persistStore();if(currentChatId===id){currentChatId=null;conversation=[];localStorage.removeItem(ACTIVE_CHAT_KEY);enhancedWelcome()}enhancedRecent();renderActivitySafe()}}else if(b.dataset.action==="export")exportChat(id)});
+  function downloadText(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/plain;charset=utf-8"}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+  function exportChat(id){const c=currentStore().find(x=>x.id===id);if(!c)return;downloadText((c.title||"chat")+".txt",(c.messages||[]).map(m=>(m.role==="user"?"YOU":"VYNTRA AI")+":\n"+String(m.content||"")).join("\n\n"))}
+  function exportAll(){const text=currentStore().map(c=>`### ${c.title||"Conversation"}\n`+(c.messages||[]).map(m=>`[${m.role}] ${m.content}`).join("\n")).join("\n\n");downloadText("vyntra-ai-chats.txt",text||"No chats yet.")}
+  function printChat(){window.print()}
+  function clearAllChats(){if(!confirm("Clear all chats for this account?"))return;chatStore=[];conversation=[];currentChatId=null;localStorage.removeItem(ACTIVE_CHAT_KEY);persistStore();enhancedWelcome();enhancedRecent();renderActivitySafe()}
+  modeBtn?.addEventListener("click",e=>{e.stopPropagation();toolbar?.classList.toggle("show")});
+  toolbar?.querySelectorAll("button[data-mode]").forEach(b=>b.addEventListener("click",()=>{assistantMode=b.dataset.mode;toolbar.querySelectorAll("button").forEach(x=>x.classList.remove("active"));b.classList.add("active");modeBtn.title="AI mode: "+b.textContent.trim();if(promptInput)promptInput.placeholder=assistantMode==="image"?"Describe the image you want...":"Message VYNTRA AI...";toolbar.classList.remove("show")}));
+  document.addEventListener("click",e=>{if(toolbar?.classList.contains("show")&&!toolbar.contains(e.target)&&!modeBtn?.contains(e.target))toolbar.classList.remove("show")});
+  fileBtn?.addEventListener("click",()=>fileInput?.click());
+  fileInput?.addEventListener("change",async()=>{const f=fileInput.files?.[0];if(!f)return;attachedFile=f;attachedText="";attachText.textContent=`📎 ${f.name}`;attachChip.classList.add("show");if(f.type.startsWith("image/")){const u=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(f)});selectedImage=u;const p=$id("previewImage");if(p){p.src=u;$id("imagePreview")?.classList.add("show")}}else if(/(text\/|json|javascript|css|csv|markdown|html)/i.test((f.type||"")+f.name)){attachedText=await f.text();attachText.textContent=`📄 ${f.name} attached`}else attachText.textContent=`📎 ${f.name} attached`});
+  removeAttachment?.addEventListener("click",()=>{attachedFile=null;attachedText="";if(fileInput)fileInput.value="";attachChip?.classList.remove("show");if(typeof clearImage==="function")clearImage()});
+  const originalPostChat=postChat;postChat=async function(message,signal){let enriched=message;const ctx=[];if(assistantMode!=="fast")ctx.push(`Assistant mode: ${assistantMode}. ${modeInstructions[assistantMode]}`);if(attachedFile)ctx.push(`User attached file: ${attachedFile.name}. ${attachedText?"File content:\n"+attachedText.slice(0,20000):"Attachment type is not text-extractable in the browser."}`);if(ctx.length)enriched=message+"\n\n[Context for assistant]\n"+ctx.join("\n\n");return originalPostChat(enriched,signal)};
+  const originalSendMessage=sendMessage;sendMessage=async function(){const had=!!attachedFile;await originalSendMessage();if(!generating&&had){attachedFile=null;attachedText="";if(fileInput)fileInput.value="";attachChip?.classList.remove("show");if(typeof clearImage==="function")clearImage()}};
+  const originalAddResponseActions=addResponseActions;addResponseActions=function(row,text,promptForResponse){originalAddResponseActions(row,text,promptForResponse);const actions=row.querySelector(".response-actions");if(!actions||actions.querySelector(".speak-response"))return;const b=document.createElement("button");b.className="response-action speak-response";b.textContent="🔊 Listen";b.onclick=()=>{if(!(window.speechSynthesis))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.98;u.onstart=()=>b.classList.add("speaking");u.onend=()=>b.classList.remove("speaking");u.onerror=()=>b.classList.remove("speaking");speechSynthesis.speak(u)};actions.appendChild(b)};
+  function renderActivitySafe(q=""){const box=$id("activityList");if(!box)return;const query=String(q).toLowerCase().trim();const list=currentStore().slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0)).filter(c=>!query||String(c.title||"").toLowerCase().includes(query)||(c.messages||[]).some(m=>String(m.content||"").toLowerCase().includes(query)));box.innerHTML="";if(!list.length){box.innerHTML='<div class="activity-empty">No activity found.</div>';return}list.slice(0,50).forEach(c=>{const e=document.createElement("div");e.className="activity-entry";e.innerHTML=`<strong>${escapeHTML(c.title||"Conversation")}</strong><span>${formatDate(c.updatedAt||c.createdAt)} · ${(c.messages||[]).length} messages</span>`;e.onclick=()=>{window._vyntraCloseModal?.();loadChat(c.id)};box.appendChild(e)})}
+  const safeStatus=(safeUser?.status||safeUser?.user?.status||"approved").toString();
+  function refreshAccount(){setWelcomeName();if($id("accountStatus"))$id("accountStatus").textContent="● "+(safeStatus.charAt(0).toUpperCase()+safeStatus.slice(1))+" User";if($id("accountLastLogin")){const k="vyntraLastLogin";let v=localStorage.getItem(k);if(!v){v=new Date().toLocaleString();localStorage.setItem(k,v)}$id("accountLastLogin").textContent=v}if($id("accountDevice"))$id("accountDevice").textContent=(navigator.userAgentData?.mobile?"Mobile":"Desktop")+" · "+(navigator.userAgent.match(/Chrome/i)?"Chrome":navigator.userAgent.match(/Firefox/i)?"Firefox":navigator.userAgent.match(/Safari/i)?"Safari":"Browser")}
+  refreshAccount();
+  $id("activityBtn")?.addEventListener("click",()=>renderActivitySafe());$id("searchInput")?.addEventListener("input",e=>{enhancedRecent();renderActivitySafe(e.target.value)});$id("clearChatsBtn")?.addEventListener("click",clearAllChats);$id("exportTxtBtn")?.addEventListener("click",exportAll);$id("printAllBtn")?.addEventListener("click",printChat);$id("exportAllBtn")?.addEventListener("click",exportAll);$id("printChatBtn")?.addEventListener("click",printChat);$id("accountLogoutBtn")?.addEventListener("click",()=>{localStorage.removeItem("vyntraUser");location.href="index.html"});
+  const origSaveCurrent=saveCurrentChat;saveCurrentChat=function(){origSaveCurrent();enhancedRecent();renderActivitySafe()};
+  enhancedRecent();setWelcomeName();renderActivitySafe();window._vyntraCloseModal=()=>document.querySelectorAll(".vyntra-modal.show").forEach(m=>m.classList.remove("show"));
+  if($id("accountName"))$id("accountName").textContent=getName();if($id("accountEmail"))$id("accountEmail").textContent=getEmail();if($id("accountMobile"))$id("accountMobile").textContent=getMobile();if($id("accountPassword"))$id("accountPassword").textContent="••••••••";
+  window.addEventListener("storage",enhancedRecent);
 })();
 </script>
 
