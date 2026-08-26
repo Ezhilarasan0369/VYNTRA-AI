@@ -1647,6 +1647,7 @@ body.light .account-note{color:#707580}
 .feature-toolbar button{border:1px solid #363941;background:#202229;color:#dddfe5;border-radius:9px;padding:8px 10px;font-size:12px;cursor:pointer}
 .feature-toolbar button:hover,.feature-toolbar button.active{background:#7050ff;border-color:#8065ff;color:#fff}
 .attach-chip{display:none;align-items:center;gap:8px;width:min(900px,100%);margin:0 auto 6px;padding:8px 11px;border:1px solid #343740;border-radius:10px;background:#17191f;color:#c7c9d1;font-size:12px}
+.composer-state{display:flex;align-items:center;justify-content:center;min-height:0;margin:0 auto 6px;padding:0 10px;width:min(900px,100%);font-size:11px;color:#9ea3b5;pointer-events:none}.composer-state .state-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid #2d3040;border-radius:999px;background:#13151b}.composer-state .state-pill strong{color:#d8dbea;font-weight:600}.composer-state.hidden{display:none} body.light .composer-state .state-pill{background:#fff;border-color:#dfe2e9;color:#666b78} body.light .composer-state .state-pill strong{color:#2f3340}
 .attach-chip.show{display:flex}.attach-chip button{margin-left:auto;border:0;background:transparent;color:#aaa;cursor:pointer}
 .recent-group-title{padding:10px 10px 5px;color:#707581;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
 .recent-row{position:relative;display:flex;align-items:center;gap:7px;margin:1px 0}.recent-row .recent-item{flex:1;min-width:0}
@@ -1780,6 +1781,7 @@ body{
     align-items:center;
 }
 .composer-option:hover,.composer-option.active{background:#7050ff;border-color:#8065ff;color:#fff}
+#quickSearchBtn.active{box-shadow:0 0 0 1px rgba(127,94,255,.35),0 0 18px rgba(127,94,255,.18)}
 .composer-option-label{grid-column:1/-1;color:#858a96;font-size:10px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;padding:6px 4px 2px}
 
 .disclaimer{width:100%;max-width:900px;overflow-wrap:anywhere}
@@ -2165,6 +2167,7 @@ body.light .sidebar-bottom{
 
     <div class="composer-wrap">
         <div class="attach-chip" id="attachChip"><span id="attachText">Attachment</span><button id="removeAttachment" type="button">×</button></div>
+        <div class="composer-state hidden" id="composerState" aria-live="polite"><span class="state-pill" id="composerStateText"></span></div>
 
         <div
             class="image-preview"
@@ -2213,6 +2216,7 @@ body.light .sidebar-bottom{
                     <div class="composer-more-menu" id="composerMoreMenu">
                         <button type="button" class="composer-option" id="quickImageBtn">🖼️ <span>Image</span></button>
                         <button type="button" class="composer-option" id="quickFileBtn">📎 <span>File</span></button>
+                        <button type="button" class="composer-option" id="quickSearchBtn" aria-pressed="false">🌐 <span>Search web</span></button>
                         <div class="composer-option-label">AI mode</div>
                         <button type="button" class="composer-option mode-option active" data-quick-mode="fast">⚡ <span>Fast</span></button>
                         <button type="button" class="composer-option mode-option" data-quick-mode="coding">💻 <span>Coding</span></button>
@@ -2779,7 +2783,10 @@ async function postChat(message, signal){
             email,
             history:contextualHistory,
             language:languageMode,
-            languageInstruction:languageInstruction(languageMode)
+            languageInstruction:languageInstruction(languageMode),
+            searchEnabled: Boolean(window.vyntraSearchEnabled),
+            webSearch: Boolean(window.vyntraSearchEnabled),
+            mode: window.vyntraAssistantMode || "fast"
         })
     });
 
@@ -2864,8 +2871,9 @@ function escapeHTML(value){
 
 function inlineMarkdown(text){
 
-    let value =
-        escapeHTML(text);
+    // renderMarkdown() already escaped the source once.
+    // Escaping again exposes entities such as &#039; in the UI.
+    let value = String(text ?? "");
 
     /*
        Inline code
@@ -3619,7 +3627,11 @@ async function generateAI(text, regenerate=false){
         showError(ai, currentPrompt);
     }finally{
         setGenerating(false);
-        smartScroll(false);
+        // Keep the user's chosen scroll position. Only follow the answer
+        // automatically when they stayed at the bottom.
+        if(!userScrollLock){
+            smartScroll(false);
+        }
     }
 }
 
@@ -3669,20 +3681,23 @@ function isNearBottom(){
     return distance < 150;
 }
 
+let userScrollLock = false;
+let lastScrollTop = 0;
+
 function smartScroll(
     force=false
 ){
 
-    if(force || isNearBottom()){
-
+    if(force){
+        userScrollLock = false;
         chatArea.scrollTo({
-            top:
-                chatArea.scrollHeight,
-
-            behavior:
-                force
-                    ? "smooth"
-                    : "auto"
+            top: chatArea.scrollHeight,
+            behavior: "smooth"
+        });
+    }else if(!userScrollLock && isNearBottom()){
+        chatArea.scrollTo({
+            top: chatArea.scrollHeight,
+            behavior: "auto"
         });
     }
 
@@ -3711,22 +3726,45 @@ function updateScrollButton(){
 
 chatArea.addEventListener(
     "scroll",
-    updateScrollButton,
+    () => {
+        const current = chatArea.scrollTop;
+        if(generating && current < lastScrollTop - 8){
+            // The user intentionally scrolled upward while AI was replying.
+            // Stop auto-following so they can read older content freely.
+            userScrollLock = true;
+        }
+        lastScrollTop = current;
+        updateScrollButton();
+    },
+    {passive:true}
+);
+
+chatArea.addEventListener(
+    "wheel",
+    (event) => {
+        if(generating && event.deltaY < -2){
+            userScrollLock = true;
+        }
+    },
+    {passive:true}
+);
+
+chatArea.addEventListener(
+    "touchstart",
+    () => {
+        if(generating) userScrollLock = true;
+    },
     {passive:true}
 );
 
 scrollDown.addEventListener(
     "click",
     () => {
-
+        userScrollLock = false;
         chatArea.scrollTo({
-            top:
-                chatArea.scrollHeight,
-
-            behavior:
-                "smooth"
+            top: chatArea.scrollHeight,
+            behavior: "smooth"
         });
-
     }
 );
 
@@ -4205,19 +4243,62 @@ updateScrollButton();
   const getEmail = ()=>String(safeUser?.email || safeUser?.user?.email || safeUser?.profile?.email || "Not available").trim();
   const getMobile = ()=>String(safeUser?.mobile || safeUser?.user?.mobile || safeUser?.profile?.mobile || safeUser?.phone || "Not available").trim();
   const modeBtn=$id("modeBtn"), toolbar=$id("featureToolbar"), fileBtn=$id("fileBtn"), fileInput=$id("fileInput"), attachChip=$id("attachChip"), attachText=$id("attachText"), removeAttachment=$id("removeAttachment");
-  const moreBtn=$id("moreBtn"), moreMenu=$id("composerMoreMenu"), quickImageBtn=$id("quickImageBtn"), quickFileBtn=$id("quickFileBtn");
+  const moreBtn=$id("moreBtn"), moreMenu=$id("composerMoreMenu"), quickImageBtn=$id("quickImageBtn"), quickFileBtn=$id("quickFileBtn"), quickSearchBtn=$id("quickSearchBtn");
+
+  let assistantMode="fast";
+  window.vyntraSearchEnabled = Boolean(window.vyntraSearchEnabled);
+  window.vyntraAssistantMode = assistantMode;
+
+  const modeLabels={fast:"Fast",coding:"Coding",study:"Study",interview:"Interview",deep:"Deep Think",image:"Image generation"};
+  const modePlaceholders={fast:"Message VYNTRA AI...",coding:"Describe the coding problem...",study:"Ask what you want to learn...",interview:"Ask an interview question...",deep:"Ask a complex question...",image:"Describe the image you want..."};
+  const composerState=$id("composerState"), composerStateText=$id("composerStateText");
+  function updateComposerState(){
+      if(!composerState||!composerStateText||!promptInput) return;
+      const parts=[];
+      if(window.vyntraSearchEnabled) parts.push("🌐 Web search");
+      if(assistantMode!=="fast") parts.push(modeLabels[assistantMode]||assistantMode);
+      if(!parts.length){ composerState.classList.add("hidden"); composerStateText.textContent=""; }
+      else { composerState.classList.remove("hidden"); composerStateText.innerHTML=parts.map((x,i)=>i===0?`<strong>${x}</strong>`:x).join(" · "); }
+      promptInput.placeholder = window.vyntraSearchEnabled && assistantMode!=="image"
+        ? (assistantMode!=="fast" ? `Search the web · ${modeLabels[assistantMode]}...` : "Search the web with VYNTRA AI...")
+        : (modePlaceholders[assistantMode]||modePlaceholders.fast);
+  }
+
+  function updateSearchUI(){
+      if(!quickSearchBtn) return;
+      quickSearchBtn.classList.toggle("active", window.vyntraSearchEnabled);
+      quickSearchBtn.setAttribute("aria-pressed", String(window.vyntraSearchEnabled));
+      quickSearchBtn.innerHTML = window.vyntraSearchEnabled
+          ? '🌐 <span>Search web ✓</span>'
+          : '🌐 <span>Search web</span>';
+      if(promptInput){
+          promptInput.setAttribute(
+              "aria-label",
+              window.vyntraSearchEnabled
+                  ? "Message VYNTRA AI with web search enabled"
+                  : "Message VYNTRA AI"
+          );
+      }
+  }
 
   function closeMoreMenu(){ if(moreMenu) moreMenu.classList.remove("show"); if(moreBtn) moreBtn.setAttribute("aria-expanded","false"); }
   function toggleMoreMenu(){ if(!moreMenu) return; const open=moreMenu.classList.toggle("show"); moreBtn?.setAttribute("aria-expanded",String(open)); }
   moreBtn?.addEventListener("click",e=>{e.stopPropagation();toggleMoreMenu()});
   quickImageBtn?.addEventListener("click",()=>{closeMoreMenu();imageBtn?.click()});
   quickFileBtn?.addEventListener("click",()=>{closeMoreMenu();fileBtn?.click()});
+  quickSearchBtn?.addEventListener("click",()=>{
+      window.vyntraSearchEnabled = !window.vyntraSearchEnabled;
+      updateSearchUI();
+      updateComposerState();
+  });
   moreMenu?.querySelectorAll("[data-quick-mode]").forEach(b=>b.addEventListener("click",()=>{
       assistantMode=b.dataset.quickMode||"fast";
+      window.vyntraAssistantMode=assistantMode;
       moreMenu.querySelectorAll("[data-quick-mode]").forEach(x=>x.classList.toggle("active",x===b));
       toolbar?.querySelectorAll("button[data-mode]").forEach(x=>x.classList.toggle("active",x.dataset.mode===assistantMode));
-      if(modeBtn) modeBtn.title="AI mode: "+assistantMode;
-      if(promptInput) promptInput.placeholder=assistantMode==="image"?"Describe the image you want...":"Message VYNTRA AI...";
+      if(modeBtn) modeBtn.title="AI mode: "+(modeLabels[assistantMode]||assistantMode);
+      if(assistantMode==="image" && window.vyntraSearchEnabled){ window.vyntraSearchEnabled=false; updateSearchUI(); }
+      updateComposerState();
       closeMoreMenu();
   }));
   document.addEventListener("click",e=>{ if(moreMenu?.classList.contains("show") && !moreMenu.contains(e.target) && !moreBtn?.contains(e.target)) closeMoreMenu(); });
@@ -4235,7 +4316,6 @@ updateScrollButton();
   promptInput?.addEventListener("blur",()=>setTimeout(autoGrowPrompt,50));
   window.addEventListener("resize",autoGrowPrompt);
   setTimeout(autoGrowPrompt,0);
-  let assistantMode="fast";
   let attachedFile=null;
   let attachedText="";
   let activeMenuChat=null;
@@ -4247,6 +4327,8 @@ updateScrollButton();
     deep:"Think carefully about edge cases and trade-offs. Give a thorough, structured answer.",
     image:"Treat this as an image-generation request. If image generation is unavailable, explain the limitation clearly instead of pretending an image was created."
   };
+  updateSearchUI();
+  updateComposerState();
   function currentStore(){try{return Array.isArray(chatStore)?chatStore:JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY)||"[]")||[]}catch(e){return []}}
   function persistStore(){try{saveChatStore()}catch(e){try{localStorage.setItem(CHAT_STORAGE_KEY,JSON.stringify(chatStore))}catch(_){}}}
   function setWelcomeName(){const el=$id("welcomeName");if(el)el.textContent=getName();const pn=$id("profileName");if(pn)pn.textContent=getName();const i=(getName().charAt(0)||"U").toUpperCase();if($id("profileAvatar"))$id("profileAvatar").textContent=i;if($id("headerAvatar"))$id("headerAvatar").textContent=i}
@@ -4267,12 +4349,12 @@ updateScrollButton();
   function printChat(){window.print()}
   function clearAllChats(){if(!confirm("Clear all chats for this account?"))return;chatStore=[];conversation=[];currentChatId=null;localStorage.removeItem(ACTIVE_CHAT_KEY);persistStore();enhancedWelcome();enhancedRecent();renderActivitySafe()}
   modeBtn?.addEventListener("click",e=>{e.stopPropagation();toolbar?.classList.toggle("show")});
-  toolbar?.querySelectorAll("button[data-mode]").forEach(b=>b.addEventListener("click",()=>{assistantMode=b.dataset.mode;toolbar.querySelectorAll("button").forEach(x=>x.classList.remove("active"));b.classList.add("active");modeBtn.title="AI mode: "+b.textContent.trim();if(promptInput)promptInput.placeholder=assistantMode==="image"?"Describe the image you want...":"Message VYNTRA AI...";toolbar.classList.remove("show")}));
+  toolbar?.querySelectorAll("button[data-mode]").forEach(b=>b.addEventListener("click",()=>{assistantMode=b.dataset.mode;window.vyntraAssistantMode=assistantMode;toolbar.querySelectorAll("button").forEach(x=>x.classList.remove("active"));b.classList.add("active");modeBtn.title="AI mode: "+b.textContent.trim();if(assistantMode==="image"&&window.vyntraSearchEnabled){window.vyntraSearchEnabled=false;updateSearchUI();}updateComposerState();toolbar.classList.remove("show")}));
   document.addEventListener("click",e=>{if(toolbar?.classList.contains("show")&&!toolbar.contains(e.target)&&!modeBtn?.contains(e.target))toolbar.classList.remove("show")});
   fileBtn?.addEventListener("click",()=>fileInput?.click());
   fileInput?.addEventListener("change",async()=>{const f=fileInput.files?.[0];if(!f)return;attachedFile=f;attachedText="";attachText.textContent=`📎 ${f.name}`;attachChip.classList.add("show");if(f.type.startsWith("image/")){const u=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(f)});selectedImage=u;const p=$id("previewImage");if(p){p.src=u;$id("imagePreview")?.classList.add("show")}}else if(/(text\/|json|javascript|css|csv|markdown|html)/i.test((f.type||"")+f.name)){attachedText=await f.text();attachText.textContent=`📄 ${f.name} attached`}else attachText.textContent=`📎 ${f.name} attached`});
   removeAttachment?.addEventListener("click",()=>{attachedFile=null;attachedText="";if(fileInput)fileInput.value="";attachChip?.classList.remove("show");if(typeof clearImage==="function")clearImage()});
-  const originalPostChat=postChat;postChat=async function(message,signal){let enriched=message;const ctx=[];if(assistantMode!=="fast")ctx.push(`Assistant mode: ${assistantMode}. ${modeInstructions[assistantMode]}`);if(attachedFile)ctx.push(`User attached file: ${attachedFile.name}. ${attachedText?"File content:\n"+attachedText.slice(0,20000):"Attachment type is not text-extractable in the browser."}`);if(ctx.length)enriched=message+"\n\n[Context for assistant]\n"+ctx.join("\n\n");return originalPostChat(enriched,signal)};
+  const originalPostChat=postChat;postChat=async function(message,signal){let enriched=message;const ctx=[];ctx.push(`Selected VYNTRA AI mode: ${assistantMode}. ${modeInstructions[assistantMode]||"Answer normally."}`);if(attachedFile)ctx.push(`User attached file: ${attachedFile.name}. ${attachedText?"File content:\n"+attachedText.slice(0,20000):"Attachment type is not text-extractable in the browser."}`);if(ctx.length)enriched=message+"\n\n[Context for assistant]\n"+ctx.join("\n\n");return originalPostChat(enriched,signal)};
   const originalSendMessage=sendMessage;sendMessage=async function(){const had=!!attachedFile;await originalSendMessage();if(!generating&&had){attachedFile=null;attachedText="";if(fileInput)fileInput.value="";attachChip?.classList.remove("show");if(typeof clearImage==="function")clearImage()}};
   const originalAddResponseActions=addResponseActions;addResponseActions=function(row,text,promptForResponse){originalAddResponseActions(row,text,promptForResponse);const actions=row.querySelector(".response-actions");if(!actions||actions.querySelector(".speak-response"))return;const b=document.createElement("button");b.className="response-action speak-response";b.textContent="🔊 Listen";b.onclick=()=>{if(!(window.speechSynthesis))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.98;u.onstart=()=>b.classList.add("speaking");u.onend=()=>b.classList.remove("speaking");u.onerror=()=>b.classList.remove("speaking");speechSynthesis.speak(u)};actions.appendChild(b)};
   function renderActivitySafe(q=""){const box=$id("activityList");if(!box)return;const query=String(q).toLowerCase().trim();const list=currentStore().slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0)).filter(c=>!query||String(c.title||"").toLowerCase().includes(query)||(c.messages||[]).some(m=>String(m.content||"").toLowerCase().includes(query)));box.innerHTML="";if(!list.length){box.innerHTML='<div class="activity-empty">No activity found.</div>';return}list.slice(0,50).forEach(c=>{const e=document.createElement("div");e.className="activity-entry";e.innerHTML=`<strong>${escapeHTML(c.title||"Conversation")}</strong><span>${formatDate(c.updatedAt||c.createdAt)} · ${(c.messages||[]).length} messages</span>`;e.onclick=()=>{window._vyntraCloseModal?.();loadChat(c.id)};box.appendChild(e)})}
