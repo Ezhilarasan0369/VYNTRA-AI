@@ -16,6 +16,8 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
+    overflow-wrap:anywhere;
+    word-break:break-word;
 }
 
 body{
@@ -1192,7 +1194,7 @@ body{
 
     flex:1;
 
-    height:50px;
+    height:44px;
 
     resize:none;
 
@@ -1209,7 +1211,7 @@ body{
 
     font-size:16px;
 
-    line-height:50px;
+    line-height:1.45;
 
     background-image:
         linear-gradient(
@@ -1545,9 +1547,12 @@ body{
 }
 
 /* Persistent recent chat items */
-#recentChats{display:flex;flex-direction:column;gap:2px}
+#recentChats{display:flex;flex-direction:column;gap:2px;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;flex:1}
 .recent-item.active{background:#25283a;border-color:#34384b}
 .recent-item span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar{overflow:hidden}
+.sidebar-bottom{flex-shrink:0}
+#recentWelcome{flex-shrink:0}
 
 /* ===== VYNTRA AI ADDITIONS ===== */
 body.light{background:#f6f7fb;color:#111318}
@@ -1658,6 +1663,191 @@ body.light .feature-toolbar{background:#fff;border-color:#dfe2e9}.body.light .fe
 body.light .attach-chip{background:#fff;border-color:#dfe2e9;color:#343741}
 body.light .chat-menu{background:#fff;border-color:#dfe2e9}.body.light .chat-menu button{color:#343741}
 body.light .session-item{background:#f7f8fa;border-color:#dfe2e9}.body.light .account-actions button{background:#f0f2f6;color:#343741}
+
+
+/* =========================================================
+   FINAL RESPONSIVE / MOBILE-FIRST OVERRIDES
+========================================================= */
+html,body{
+    width:100%;
+    min-width:0;
+    height:100%;
+    max-width:100%;
+}
+
+body{
+    overflow:hidden;
+}
+
+.app,
+.main,
+.chat-area,
+.messages,
+.composer-wrap,
+.composer,
+.composer-actions{
+    min-width:0;
+}
+
+.app{height:100dvh;min-height:100svh;max-width:100vw;overflow:hidden}
+.main{min-width:0;min-height:0;width:100%;height:100%;position:relative}
+.header{min-width:0;overflow:hidden}
+.header-left{min-width:0}
+.header-left > div:last-child{min-width:0}
+.header-brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-right{flex-shrink:0}
+.chat-area{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-y:contain}
+.messages{width:100%;max-width:900px}
+.message-row,.message-inner,.ai-content,.user-bubble{min-width:0;max-width:100%}
+.user .message-inner{max-width:min(680px,78%)}
+.ai-content{overflow-wrap:anywhere;word-break:break-word}
+.ai-content a{overflow-wrap:anywhere;word-break:break-word}
+.ai-content pre,.code-block{max-width:100%;overflow-x:auto}
+.ai-content table{display:block;max-width:100%;overflow-x:auto}
+.ai-content img{max-width:100%;height:auto}
+
+.welcome{width:100%;max-width:100%;padding-left:12px;padding-right:12px}
+.welcome h1{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.welcome-sub{max-width:720px;overflow-wrap:anywhere}
+.suggestions{width:100%;max-width:850px}
+
+.composer-wrap{
+    padding-bottom:calc(10px + env(safe-area-inset-bottom));
+    padding-left:max(12px, env(safe-area-inset-left));
+    padding-right:max(12px, env(safe-area-inset-right));
+}
+
+.composer{
+    width:100%;
+    max-width:900px;
+    min-height:64px;
+    padding:8px 8px 8px 14px;
+    align-items:flex-end;
+    border-radius:26px;
+}
+
+#prompt{
+    width:100%;
+    min-width:0;
+    min-height:44px;
+    height:44px;
+    max-height:120px;
+    padding:7px 0;
+    line-height:1.45;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+    -webkit-overflow-scrolling:touch;
+}
+
+.composer-actions{flex-shrink:0;align-items:flex-end;gap:3px}
+.icon-btn,.send-btn{width:42px;height:42px}
+.legacy-hidden{display:none!important}
+#fileInput{display:none!important}
+
+.composer-more-wrap{position:relative;flex-shrink:0}
+.more-btn{font-size:27px;line-height:1;font-weight:400}
+.composer-more-menu{
+    position:absolute;
+    right:0;
+    bottom:calc(100% + 10px);
+    width:min(270px,calc(100vw - 24px));
+    max-height:min(65vh,430px);
+    overflow:auto;
+    display:none;
+    padding:8px;
+    border:1px solid #343740;
+    border-radius:16px;
+    background:#17191f;
+    box-shadow:0 20px 50px rgba(0,0,0,.42);
+    z-index:40;
+}
+.composer-more-menu.show{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.composer-option{
+    min-width:0;
+    border:1px solid #363941;
+    border-radius:10px;
+    background:#202229;
+    color:#e7e8ed;
+    padding:10px;
+    font:inherit;
+    font-size:12px;
+    cursor:pointer;
+    text-align:left;
+    display:flex;
+    gap:7px;
+    align-items:center;
+}
+.composer-option:hover,.composer-option.active{background:#7050ff;border-color:#8065ff;color:#fff}
+.composer-option-label{grid-column:1/-1;color:#858a96;font-size:10px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;padding:6px 4px 2px}
+
+.disclaimer{width:100%;max-width:900px;overflow-wrap:anywhere}
+
+#imagePreview,.image-preview,.attach-chip{width:100%;max-width:900px}
+.attach-chip{min-width:0}
+.attach-chip span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+@media(max-width:850px){
+    .sidebar{width:min(290px,86vw);max-width:86vw}
+    .header{height:76px;padding:0 12px}
+    .header-left{gap:6px}
+    .mobile-menu{flex-shrink:0}
+    .header-brand{font-size:18px}
+    .online{font-size:12px}
+    .header-right{gap:7px}
+    .refresh-btn,.header-avatar{width:42px;height:42px;flex-shrink:0}
+    .chat-area{padding:22px 12px 170px}
+    .welcome{padding-top:18px;padding-bottom:40px}
+    .welcome-logo{width:62px;height:62px;margin-bottom:18px}
+    .welcome h1{font-size:clamp(34px,9vw,52px);letter-spacing:-1.8px}
+    .welcome-sub{font-size:14px;line-height:1.65;margin-bottom:24px}
+    .suggestions{grid-template-columns:1fr;gap:10px}
+    .suggestion{min-height:112px;padding:16px;border-radius:18px}
+    .suggestion-icon{margin-bottom:12px}
+    .message-row{margin-bottom:17px}
+    .user .message-inner{max-width:90%}
+    .ai-content{font-size:15px;line-height:1.65}
+    .composer-wrap{padding-top:8px}
+    .composer{border-radius:24px}
+    .composer-more-menu{right:-4px}
+}
+
+@media(max-width:600px){
+    html,body{overscroll-behavior:none}
+    .chat-area{padding-left:10px;padding-right:10px;padding-bottom:162px}
+    .header-avatar,.refresh-btn{width:40px;height:40px}
+    .mobile-menu{width:40px;height:40px;padding:0}
+    .composer{padding-left:12px;padding-right:6px;gap:3px;border-radius:23px;min-height:62px}
+    #prompt{font-size:15px;min-height:42px;height:42px;max-height:112px}
+    .icon-btn,.send-btn{width:39px;height:39px}
+    .send-btn{font-size:18px}
+    .composer-more-menu{width:min(270px,calc(100vw - 20px));right:0}
+    .composer-option{font-size:11px;padding:9px}
+    .attach-chip{font-size:11px}
+    .preview-card{width:76px;height:76px}
+    .disclaimer{font-size:9px;padding:0 6px}
+}
+
+@media(max-width:380px){
+    .header{padding:0 8px}
+    .header-brand{font-size:16px}
+    .online{font-size:11px}
+    .header-right{gap:4px}
+    .refresh-btn,.header-avatar{width:38px;height:38px}
+    .chat-area{padding-left:8px;padding-right:8px;padding-bottom:158px}
+    .composer{padding-left:10px}
+    #prompt{font-size:14px}
+    .icon-btn,.send-btn{width:37px;height:37px}
+}
+
+@media(min-width:851px){
+    .composer-more-menu{bottom:calc(100% + 12px)}
+}
+
+body.light .composer-more-menu{background:#fff;border-color:#dfe2e9}
+body.light .composer-option{background:#f2f3f7;border-color:#d9dce5;color:#343741}
+body.light .composer-option:hover,body.light .composer-option.active{background:#7050ff;border-color:#8065ff;color:#fff}
 
 </style>
 </head>
@@ -1963,56 +2153,35 @@ body.light .session-item{background:#f7f8fa;border-color:#dfe2e9}.body.light .ac
 
             <div class="composer-actions">
 
-                <!-- IMAGE -->
-
-                <button
-                    class="icon-btn"
-                    id="imageBtn"
-                    title="Upload image"
-                    type="button"
-                >
-
-                    <svg
-                        viewBox="0 0 24 24"
-                        width="21"
-                        height="21"
-                        fill="none"
+                <!-- ATTACHMENT MENU -->
+                <div class="composer-more-wrap">
+                    <button
+                        class="icon-btn more-btn"
+                        id="moreBtn"
+                        title="More options"
+                        aria-label="More options"
+                        aria-expanded="false"
+                        type="button"
                     >
+                        +
+                    </button>
 
-                        <rect
-                            x="3"
-                            y="4"
-                            width="18"
-                            height="16"
-                            rx="3"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        />
+                    <div class="composer-more-menu" id="composerMoreMenu">
+                        <button type="button" class="composer-option" id="quickImageBtn">🖼️ <span>Image</span></button>
+                        <button type="button" class="composer-option" id="quickFileBtn">📎 <span>File</span></button>
+                        <div class="composer-option-label">AI mode</div>
+                        <button type="button" class="composer-option mode-option active" data-quick-mode="fast">⚡ <span>Fast</span></button>
+                        <button type="button" class="composer-option mode-option" data-quick-mode="coding">💻 <span>Coding</span></button>
+                        <button type="button" class="composer-option mode-option" data-quick-mode="study">📚 <span>Study</span></button>
+                        <button type="button" class="composer-option mode-option" data-quick-mode="interview">💼 <span>Interview</span></button>
+                        <button type="button" class="composer-option mode-option" data-quick-mode="deep">🧠 <span>Deep Think</span></button>
+                        <button type="button" class="composer-option mode-option" data-quick-mode="image">🎨 <span>Image generation</span></button>
+                    </div>
+                </div>
 
-                        <circle
-                            cx="8.5"
-                            cy="9"
-                            r="1.5"
-                            fill="currentColor"
-                        />
-
-                        <path
-                            d="M4.5 17l4.5-4 3.2 3 2.3-2.2 5 4.2"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-
-                    </svg>
-
-                </button>
-
-                <input
-                    id="imageInput"
-                    type="file"
-                    accept="image/*"
-                >
+                <!-- Hidden compatibility triggers used by existing logic -->
+                <button class="icon-btn legacy-hidden" id="imageBtn" title="Upload image" type="button" aria-hidden="true">🖼️</button>
+                <input id="imageInput" type="file" accept="image/*">
 
                 <!-- MIC -->
 
@@ -2065,9 +2234,9 @@ body.light .session-item{background:#f7f8fa;border-color:#dfe2e9}.body.light .ac
 
                 </button>
 
-                <button class="icon-btn mode-btn" id="modeBtn" title="AI mode" type="button">⚡</button>
+                <button class="icon-btn mode-btn legacy-hidden" id="modeBtn" title="AI mode" type="button" aria-hidden="true">⚡</button>
 
-                <button class="icon-btn" id="fileBtn" title="Attach file" type="button">📎</button>
+                <button class="icon-btn legacy-hidden" id="fileBtn" title="Attach file" type="button" aria-hidden="true">📎</button>
                 <input id="fileInput" type="file" accept=".txt,.md,.json,.csv,.html,.js,.css,.java,.py,.pdf,.doc,.docx,image/*">
 
                 <!-- SEND / STOP -->
@@ -3526,13 +3695,18 @@ promptInput.addEventListener(
     () => {
 
         promptInput.style.height =
-            "50px";
+            "auto";
 
         promptInput.style.height =
             Math.min(
                 promptInput.scrollHeight,
-                140
+                window.innerWidth <= 600 ? 112 : 120
             ) + "px";
+
+        promptInput.style.overflowY =
+            promptInput.scrollHeight > (window.innerWidth <= 600 ? 112 : 120)
+                ? "auto"
+                : "hidden";
 
         updateSendButton();
     }
@@ -3983,10 +4157,40 @@ updateScrollButton();
 (function(){
   const $id = (id)=>document.getElementById(id);
   const safeUser = (()=>{ try{return JSON.parse(localStorage.getItem("vyntraUser")||"null")}catch(e){return null} })();
-  const getName = ()=>String(safeUser?.name || safeUser?.user?.name || safeUser?.profile?.name || "User").trim() || "User";
+  const getName = ()=>{ const raw=String(safeUser?.name || safeUser?.user?.name || safeUser?.profile?.name || "").trim(); if(raw) return raw; const e=String(safeUser?.email || safeUser?.user?.email || safeUser?.profile?.email || "").trim(); if(e && e.includes("@")){ const base=e.split("@")[0].replace(/[._-]+/g," ").trim(); return base ? base.replace(/\b\w/g,m=>m.toUpperCase()) : "User"; } return "User"; };
   const getEmail = ()=>String(safeUser?.email || safeUser?.user?.email || safeUser?.profile?.email || "Not available").trim();
   const getMobile = ()=>String(safeUser?.mobile || safeUser?.user?.mobile || safeUser?.profile?.mobile || safeUser?.phone || "Not available").trim();
   const modeBtn=$id("modeBtn"), toolbar=$id("featureToolbar"), fileBtn=$id("fileBtn"), fileInput=$id("fileInput"), attachChip=$id("attachChip"), attachText=$id("attachText"), removeAttachment=$id("removeAttachment");
+  const moreBtn=$id("moreBtn"), moreMenu=$id("composerMoreMenu"), quickImageBtn=$id("quickImageBtn"), quickFileBtn=$id("quickFileBtn");
+
+  function closeMoreMenu(){ if(moreMenu) moreMenu.classList.remove("show"); if(moreBtn) moreBtn.setAttribute("aria-expanded","false"); }
+  function toggleMoreMenu(){ if(!moreMenu) return; const open=moreMenu.classList.toggle("show"); moreBtn?.setAttribute("aria-expanded",String(open)); }
+  moreBtn?.addEventListener("click",e=>{e.stopPropagation();toggleMoreMenu()});
+  quickImageBtn?.addEventListener("click",()=>{closeMoreMenu();imageBtn?.click()});
+  quickFileBtn?.addEventListener("click",()=>{closeMoreMenu();fileBtn?.click()});
+  moreMenu?.querySelectorAll("[data-quick-mode]").forEach(b=>b.addEventListener("click",()=>{
+      assistantMode=b.dataset.quickMode||"fast";
+      moreMenu.querySelectorAll("[data-quick-mode]").forEach(x=>x.classList.toggle("active",x===b));
+      toolbar?.querySelectorAll("button[data-mode]").forEach(x=>x.classList.toggle("active",x.dataset.mode===assistantMode));
+      if(modeBtn) modeBtn.title="AI mode: "+assistantMode;
+      if(promptInput) promptInput.placeholder=assistantMode==="image"?"Describe the image you want...":"Message VYNTRA AI...";
+      closeMoreMenu();
+  }));
+  document.addEventListener("click",e=>{ if(moreMenu?.classList.contains("show") && !moreMenu.contains(e.target) && !moreBtn?.contains(e.target)) closeMoreMenu(); });
+  window.addEventListener("resize",closeMoreMenu);
+
+  function autoGrowPrompt(){
+      if(!promptInput) return;
+      promptInput.style.height="auto";
+      const max=window.innerWidth<=600?112:120;
+      promptInput.style.height=Math.min(promptInput.scrollHeight,max)+"px";
+      promptInput.style.overflowY=promptInput.scrollHeight>max?"auto":"hidden";
+  }
+  promptInput?.addEventListener("input",autoGrowPrompt);
+  promptInput?.addEventListener("focus",()=>setTimeout(autoGrowPrompt,50));
+  promptInput?.addEventListener("blur",()=>setTimeout(autoGrowPrompt,50));
+  window.addEventListener("resize",autoGrowPrompt);
+  setTimeout(autoGrowPrompt,0);
   let assistantMode="fast";
   let attachedFile=null;
   let attachedText="";
@@ -4006,7 +4210,7 @@ updateScrollButton();
   showWelcome=enhancedWelcome;
   function formatDate(iso){try{return new Date(iso).toLocaleString([],{dateStyle:"medium",timeStyle:"short"})}catch(e){return ""}}
   function dayGroup(iso){const d=new Date(iso),n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate()),b=new Date(d.getFullYear(),d.getMonth(),d.getDate()),diff=Math.floor((a-b)/86400000);if(diff===0)return"Today";if(diff===1)return"Yesterday";if(diff<=7)return"Previous 7 days";return"Older"}
-  function enhancedRecent(){const box=$id("recentChats");if(!box)return;box.innerHTML="";const sorted=currentStore().slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0),);const groups={};sorted.slice(0,30).forEach(c=>{const g=dayGroup(c.updatedAt||c.createdAt);(groups[g]??=[]).push(c)});["Today","Yesterday","Previous 7 days","Older"].forEach(g=>{if(!groups[g]?.length)return;const t=document.createElement("div");t.className="recent-group-title";t.textContent=g;box.appendChild(t);groups[g].forEach(c=>{const r=document.createElement("div");r.className="recent-row";const item=document.createElement("div");item.className="recent-item"+(c.id===currentChatId?" active":"");item.innerHTML=`<span class="recent-icon">◌</span><span title="${escapeHTML(c.title||"Conversation")}">${escapeHTML(c.title||"Conversation")}</span>`;item.onclick=()=>loadChat(c.id);const m=document.createElement("button");m.className="recent-menu-btn";m.textContent="⋮";m.title="Chat options";m.onclick=e=>{e.stopPropagation();openChatMenu(c.id,m)};r.append(item,m);box.appendChild(r)})})}
+  function enhancedRecent(){const box=$id("recentChats");if(!box)return;box.innerHTML="";const today=currentStore().slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0)).filter(c=>dayGroup(c.updatedAt||c.createdAt)==="Today");if(!today.length)return;const title=document.createElement("div");title.className="recent-group-title";title.textContent="TODAY";box.appendChild(title);today.slice(0,20).forEach(c=>{const r=document.createElement("div");r.className="recent-row";const item=document.createElement("div");item.className="recent-item"+(c.id===currentChatId?" active":"");item.innerHTML=`<span class="recent-icon">◌</span><span title="${escapeHTML(c.title||"Conversation")}">${escapeHTML(c.title||"Conversation")}</span>`;item.onclick=()=>loadChat(c.id);const m=document.createElement("button");m.className="recent-menu-btn";m.textContent="⋮";m.title="Chat options";m.onclick=e=>{e.stopPropagation();openChatMenu(c.id,m)};r.append(item,m);box.appendChild(r)})}
   renderRecentChats=enhancedRecent;
   const chatMenu=$id("chatMenu");
   function openChatMenu(id,anchor){activeMenuChat=id;if(!chatMenu)return;chatMenu.classList.add("show");const r=anchor.getBoundingClientRect();chatMenu.style.left=Math.min(window.innerWidth-170,r.right-150)+"px";chatMenu.style.top=(r.bottom+4)+"px"}
@@ -4031,7 +4235,7 @@ updateScrollButton();
   const safeStatus=(safeUser?.status||safeUser?.user?.status||"approved").toString();
   function refreshAccount(){setWelcomeName();if($id("accountStatus"))$id("accountStatus").textContent="● "+(safeStatus.charAt(0).toUpperCase()+safeStatus.slice(1))+" User";if($id("accountLastLogin")){const k="vyntraLastLogin";let v=localStorage.getItem(k);if(!v){v=new Date().toLocaleString();localStorage.setItem(k,v)}$id("accountLastLogin").textContent=v}if($id("accountDevice"))$id("accountDevice").textContent=(navigator.userAgentData?.mobile?"Mobile":"Desktop")+" · "+(navigator.userAgent.match(/Chrome/i)?"Chrome":navigator.userAgent.match(/Firefox/i)?"Firefox":navigator.userAgent.match(/Safari/i)?"Safari":"Browser")}
   refreshAccount();
-  $id("activityBtn")?.addEventListener("click",()=>renderActivitySafe());$id("searchInput")?.addEventListener("input",e=>{enhancedRecent();renderActivitySafe(e.target.value)});$id("clearChatsBtn")?.addEventListener("click",clearAllChats);$id("exportTxtBtn")?.addEventListener("click",exportAll);$id("printAllBtn")?.addEventListener("click",printChat);$id("exportAllBtn")?.addEventListener("click",exportAll);$id("printChatBtn")?.addEventListener("click",printChat);$id("accountLogoutBtn")?.addEventListener("click",()=>{localStorage.removeItem("vyntraUser");location.href="index.html"});
+  $id("activityBtn")?.addEventListener("click",()=>renderActivitySafe());$id("searchInput")?.addEventListener("input",e=>{const q=e.target.value.trim();renderActivitySafe(q);if(q){document.getElementById("activityModal")?.classList.add("show");}});$id("clearChatsBtn")?.addEventListener("click",clearAllChats);$id("exportTxtBtn")?.addEventListener("click",exportAll);$id("printAllBtn")?.addEventListener("click",printChat);$id("exportAllBtn")?.addEventListener("click",exportAll);$id("printChatBtn")?.addEventListener("click",printChat);$id("accountLogoutBtn")?.addEventListener("click",()=>{localStorage.removeItem("vyntraUser");location.href="index.html"});
   const origSaveCurrent=saveCurrentChat;saveCurrentChat=function(){origSaveCurrent();enhancedRecent();renderActivitySafe()};
   enhancedRecent();setWelcomeName();renderActivitySafe();window._vyntraCloseModal=()=>document.querySelectorAll(".vyntra-modal.show").forEach(m=>m.classList.remove("show"));
   if($id("accountName"))$id("accountName").textContent=getName();if($id("accountEmail"))$id("accountEmail").textContent=getEmail();if($id("accountMobile"))$id("accountMobile").textContent=getMobile();if($id("accountPassword"))$id("accountPassword").textContent="••••••••";
