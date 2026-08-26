@@ -1849,6 +1849,50 @@ body.light .composer-more-menu{background:#fff;border-color:#dfe2e9}
 body.light .composer-option{background:#f2f3f7;border-color:#d9dce5;color:#343741}
 body.light .composer-option:hover,body.light .composer-option.active{background:#7050ff;border-color:#8065ff;color:#fff}
 
+
+/* =========================================================
+   SIDEBAR LAYOUT FIX — keep Help / Activity / Settings visible
+========================================================= */
+.sidebar{
+    position:relative;
+    overflow:hidden;
+}
+#recentChats{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    padding-bottom:250px;
+}
+#recentWelcome{
+    flex:0 0 auto !important;
+    margin-bottom:6px;
+}
+.sidebar-bottom{
+    position:absolute !important;
+    left:12px;
+    right:12px;
+    bottom:16px;
+    margin-top:0 !important;
+    padding-top:4px;
+    background:linear-gradient(180deg,rgba(20,21,26,.15),rgba(20,21,26,.98) 18%);
+    z-index:10;
+}
+body.light .sidebar-bottom{
+    background:linear-gradient(180deg,rgba(245,246,250,.15),rgba(245,246,250,.98) 18%);
+}
+.sidebar-bottom .sidebar-divider{margin-top:0}
+.sidebar-link{position:relative;z-index:11;min-height:44px}
+.profile{position:relative;z-index:11}
+@media(max-width:850px){
+    .sidebar-bottom{left:12px;right:12px;bottom:12px}
+    #recentChats{padding-bottom:245px}
+}
+@media(max-width:420px){
+    .sidebar-bottom{left:10px;right:10px;bottom:10px}
+    #recentChats{padding-bottom:235px}
+}
+
 </style>
 </head>
 
@@ -4210,7 +4254,7 @@ updateScrollButton();
   showWelcome=enhancedWelcome;
   function formatDate(iso){try{return new Date(iso).toLocaleString([],{dateStyle:"medium",timeStyle:"short"})}catch(e){return ""}}
   function dayGroup(iso){const d=new Date(iso),n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate()),b=new Date(d.getFullYear(),d.getMonth(),d.getDate()),diff=Math.floor((a-b)/86400000);if(diff===0)return"Today";if(diff===1)return"Yesterday";if(diff<=7)return"Previous 7 days";return"Older"}
-  function enhancedRecent(){const box=$id("recentChats");if(!box)return;box.innerHTML="";const today=currentStore().slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||0)).filter(c=>dayGroup(c.updatedAt||c.createdAt)==="Today");if(!today.length)return;const title=document.createElement("div");title.className="recent-group-title";title.textContent="TODAY";box.appendChild(title);today.slice(0,20).forEach(c=>{const r=document.createElement("div");r.className="recent-row";const item=document.createElement("div");item.className="recent-item"+(c.id===currentChatId?" active":"");item.innerHTML=`<span class="recent-icon">◌</span><span title="${escapeHTML(c.title||"Conversation")}">${escapeHTML(c.title||"Conversation")}</span>`;item.onclick=()=>loadChat(c.id);const m=document.createElement("button");m.className="recent-menu-btn";m.textContent="⋮";m.title="Chat options";m.onclick=e=>{e.stopPropagation();openChatMenu(c.id,m)};r.append(item,m);box.appendChild(r)})}
+  function enhancedRecent(){const box=$id("recentChats");if(!box)return;box.innerHTML="";const today=currentStore().slice().sort((a,b)=>new Date(b.updatedAt||0)-new Date(a.updatedAt||a.createdAt||0)).filter(c=>dayGroup(c.updatedAt||c.createdAt)==="Today");if(!today.length){const empty=document.createElement("div");empty.className="recent-item";empty.style.opacity=".6";empty.innerHTML=`<span class="recent-icon">◌</span><span>No chats today</span>`;box.appendChild(empty);return;}const title=document.createElement("div");title.className="recent-group-title";title.textContent="TODAY";box.appendChild(title);today.slice(0,20).forEach(c=>{const r=document.createElement("div");r.className="recent-row";const item=document.createElement("div");item.className="recent-item"+(c.id===currentChatId?" active":"");item.innerHTML=`<span class="recent-icon">◌</span><span title="${escapeHTML(c.title||"Conversation")}">${escapeHTML(c.title||"Conversation")}</span>`;item.onclick=()=>loadChat(c.id);const m=document.createElement("button");m.className="recent-menu-btn";m.textContent="⋮";m.title="Chat options";m.onclick=e=>{e.stopPropagation();openChatMenu(c.id,m)};r.append(item,m);box.appendChild(r)})}
   renderRecentChats=enhancedRecent;
   const chatMenu=$id("chatMenu");
   function openChatMenu(id,anchor){activeMenuChat=id;if(!chatMenu)return;chatMenu.classList.add("show");const r=anchor.getBoundingClientRect();chatMenu.style.left=Math.min(window.innerWidth-170,r.right-150)+"px";chatMenu.style.top=(r.bottom+4)+"px"}
