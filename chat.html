@@ -2194,6 +2194,7 @@ html,body{
 }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 
 <body>
@@ -2459,6 +2460,9 @@ html,body{
 
     <div class="chat-menu" id="chatMenu">
         <button data-action="rename">✏ Rename</button>
+        <button data-action="pin">📌 Pin / Unpin</button>
+        <button data-action="archive">🗄 Archive / Unarchive</button>
+        <button data-action="share">🔗 Share chat</button>
         <button data-action="export">⬇ Export chat</button>
         <button data-action="delete" class="danger">🗑 Delete chat</button>
     </div>
@@ -3095,7 +3099,10 @@ async function postChat(message, signal){
             languageInstruction:languageInstruction(languageMode),
             searchEnabled: Boolean(window.vyntraSearchEnabled),
             webSearch: Boolean(window.vyntraSearchEnabled),
-            mode: window.vyntraAssistantMode || "fast"
+            mode: window.vyntraAssistantMode || "fast",
+            customInstructions: String(window.vxCustomInstructions || ""),
+            memory: String(window.vxPersonalMemory || ""),
+            fileContext: String(window.vxActiveFileContext || "")
         })
     });
 
@@ -4671,6 +4678,474 @@ updateScrollButton();
   enhancedRecent();setWelcomeName();renderActivitySafe();window._vyntraCloseModal=()=>document.querySelectorAll(".vyntra-modal.show").forEach(m=>m.classList.remove("show"));
   if($id("accountName"))$id("accountName").textContent=getName();if($id("accountEmail"))$id("accountEmail").textContent=getEmail();if($id("accountMobile"))$id("accountMobile").textContent=getMobile();if($id("accountPassword"))$id("accountPassword").textContent="••••••••";
   window.addEventListener("storage",enhancedRecent);
+})();
+</script>
+
+
+<style id="vx-missing-features-css">
+/* VYNTRA AI missing-feature pack */
+.vx-action{display:inline-flex;align-items:center;gap:6px}
+.vx-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.58);backdrop-filter:blur(8px);padding:18px}
+.vx-modal.show{display:flex}
+.vx-card{width:min(720px,96vw);max-height:min(86vh,820px);overflow:auto;border:1px solid #343842;border-radius:20px;background:#111319;color:#eef0f5;box-shadow:0 24px 90px rgba(0,0,0,.45);padding:22px}
+.vx-card h2{margin:0 0 6px;font-size:22px}
+.vx-sub{color:#8f94a0;font-size:13px;margin-bottom:18px}
+.vx-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vx-box{border:1px solid #2d3038;border-radius:14px;padding:14px;background:#171920}
+.vx-box h3{margin:0 0 8px;font-size:14px}
+.vx-box p{margin:0;color:#9da2ae;font-size:12px;line-height:1.5}
+.vx-textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border:1px solid #343842;border-radius:12px;background:#0d0f14;color:#f5f6f8;font:inherit;outline:none}
+.vx-input{width:100%;padding:11px 12px;border:1px solid #343842;border-radius:12px;background:#0d0f14;color:#f5f6f8;outline:none}
+.vx-btn{border:1px solid #343842;background:#20232b;color:#e9ebef;border-radius:10px;padding:9px 12px;cursor:pointer}
+.vx-btn:hover{background:#2b2f38}
+.vx-btn.primary{background:#6d4cff;border-color:#7b61ff;color:#fff}
+.vx-btn.danger{color:#ff9da6;border-color:#5c3138}
+.vx-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.vx-close{float:right;border:0;background:transparent;color:#a7abb5;font-size:24px;cursor:pointer}
+.vx-status{min-height:20px;margin-top:10px;color:#8f95a2;font-size:12px}
+.vx-code-modal pre{max-height:45vh;overflow:auto;background:#0a0c10;border:1px solid #292d35;border-radius:12px;padding:14px;white-space:pre}
+.vx-share-link{word-break:break-all;color:#8fa8ff}
+.vx-edit-btn{margin-left:8px;border:1px solid #31343d;background:#1a1c22;color:#aeb3bf;border-radius:8px;padding:5px 8px;font-size:11px;cursor:pointer}
+.vx-user-actions{display:flex;gap:6px;margin-top:6px;justify-content:flex-end;opacity:.78}
+.vx-pin{font-size:11px;color:#b9a8ff;margin-left:4px}
+.vx-archived{opacity:.65}
+@media(max-width:700px){.vx-grid{grid-template-columns:1fr}.vx-card{padding:16px;border-radius:16px}.vx-modal{padding:10px}}
+</style>
+
+
+<div class="vx-modal" id="vxFeatureModal" aria-hidden="true">
+  <div class="vx-card">
+    <button class="vx-close" id="vxFeatureClose" aria-label="Close">×</button>
+    <h2>VYNTRA AI — Advanced Features</h2>
+    <div class="vx-sub">Preferences, memory, sharing and advanced tools.</div>
+
+    <div class="vx-box">
+      <h3>Custom Instructions</h3>
+      <p>These preferences are applied to future AI responses.</p>
+      <textarea id="vxInstructions" class="vx-textarea" placeholder="Example: Always explain coding questions simply and include examples."></textarea>
+      <div class="vx-row"><button class="vx-btn primary" id="vxSaveInstructions">Save instructions</button></div>
+    </div>
+
+    <div class="vx-box" style="margin-top:12px">
+      <h3>Personal Memory</h3>
+      <p>Store only non-sensitive preferences. Passwords, API keys and secrets are never stored.</p>
+      <textarea id="vxMemoryInput" class="vx-textarea" placeholder="Example: I am preparing for Java interviews."></textarea>
+      <div class="vx-row">
+        <button class="vx-btn primary" id="vxSaveMemory">Remember</button>
+        <button class="vx-btn" id="vxRefreshMemory">Refresh</button>
+        <button class="vx-btn danger" id="vxClearMemory">Clear memory</button>
+      </div>
+      <div id="vxMemoryList" class="vx-status"></div>
+    </div>
+
+    <div class="vx-box" style="margin-top:12px">
+      <h3>Exports & Sharing</h3>
+      <div class="vx-row">
+        <button class="vx-btn" id="vxExportTxt">TXT</button>
+        <button class="vx-btn" id="vxExportMd">Markdown</button>
+        <button class="vx-btn" id="vxExportDocx">DOCX</button>
+        <button class="vx-btn" id="vxExportPdf">PDF / Print</button>
+        <button class="vx-btn primary" id="vxShareCurrent">Share conversation</button>
+      </div>
+      <div id="vxShareStatus" class="vx-status"></div>
+    </div>
+
+    <div class="vx-box" style="margin-top:12px">
+      <h3>Advanced Tools</h3>
+      <p>Edit earlier messages, run code in an isolated executor, compare code changes, and use the optional image generation backend.</p>
+      <div class="vx-row">
+        <button class="vx-btn" id="vxOpenExecutor">Code executor</button>
+        <button class="vx-btn" id="vxOpenRag">RAG status</button>
+      </div>
+      <div id="vxToolStatus" class="vx-status"></div>
+    </div>
+  </div>
+</div>
+
+<div class="vx-modal" id="vxCodeModal">
+  <div class="vx-card vx-code-modal">
+    <button class="vx-close" id="vxCodeClose">×</button>
+    <h2 id="vxCodeTitle">Code tool</h2>
+    <div class="vx-sub">Execution uses the secure external executor configured in the Worker.</div>
+    <label>Language</label>
+    <select id="vxCodeLanguage" class="vx-input" style="margin-top:6px">
+      <option value="python">Python</option>
+      <option value="javascript">JavaScript</option>
+      <option value="java">Java</option>
+      <option value="c">C</option>
+      <option value="cpp">C++</option>
+      <option value="sql">SQL</option>
+    </select>
+    <label style="display:block;margin-top:12px">Code</label>
+    <textarea id="vxCodeInput" class="vx-textarea" style="min-height:260px;font-family:ui-monospace,monospace"></textarea>
+    <div class="vx-row"><button class="vx-btn primary" id="vxRunCode">Run</button></div>
+    <pre id="vxCodeOutput" style="margin-top:12px;white-space:pre-wrap"></pre>
+  </div>
+</div>
+
+<div class="vx-modal" id="vxDiffModal">
+  <div class="vx-card vx-code-modal">
+    <button class="vx-close" id="vxDiffClose">×</button>
+    <h2>Code Diff</h2>
+    <div class="vx-sub">Best-effort line diff between the user's code and the AI response.</div>
+    <pre id="vxDiffOutput"></pre>
+  </div>
+</div>
+
+<div class="vx-modal" id="vxShareModal">
+  <div class="vx-card">
+    <button class="vx-close" id="vxShareClose">×</button>
+    <h2>Share conversation</h2>
+    <div class="vx-sub">The share record contains only the conversation content, not login credentials or API secrets.</div>
+    <div class="vx-box">
+      <div id="vxShareLink" class="vx-share-link"></div>
+      <div class="vx-row">
+        <button class="vx-btn primary" id="vxCopyShare">Copy link</button>
+        <button class="vx-btn danger" id="vxRevokeShare">Revoke</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script id="vx-missing-features-js">
+(() => {
+  "use strict";
+
+  const VX = {
+    user(){
+      try{return JSON.parse(localStorage.getItem("vyntraUser")||"null")}catch(e){return null}
+    },
+    email(){
+      const u=this.user()||{};
+      return String(u.email||u.user?.email||u.profile?.email||"guest").trim().toLowerCase();
+    },
+    key(name){ return `vyntra_${name}_${this.email().replace(/[^a-z0-9._-]/gi,"_")}`; },
+    async api(path, opts={}){
+      const u=this.user()||{};
+      const headers=Object.assign({"Content-Type":"application/json"}, opts.headers||{});
+      const token=u.token||u.accessToken||"";
+      if(token) headers.Authorization="Bearer "+token;
+      const r=await fetch(API_URL+path,Object.assign({},opts,{headers}));
+      const t=await r.text(); let d; try{d=JSON.parse(t)}catch(e){d={raw:t}};
+      if(!r.ok) throw new Error(d?.error||d?.message||"Request failed");
+      return d;
+    },
+    current(){
+      const c=chatStore.find(x=>x.id===currentChatId);
+      return c||null;
+    },
+    close(id){document.getElementById(id)?.classList.remove("show")},
+    open(id){document.getElementById(id)?.classList.add("show")},
+    download(name, content, type="text/plain;charset=utf-8"){
+      const a=document.createElement("a");
+      const url=URL.createObjectURL(new Blob([content],{type}));
+      a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
+    }
+  };
+
+  window.vxCustomInstructions = localStorage.getItem(VX.key("instructions")) || "";
+  window.vxPersonalMemory = localStorage.getItem(VX.key("memory")) || "";
+  window.vxActiveFileContext = "";
+
+  const featureModal=document.getElementById("vxFeatureModal");
+  const codeModal=document.getElementById("vxCodeModal");
+  const diffModal=document.getElementById("vxDiffModal");
+  const shareModal=document.getElementById("vxShareModal");
+  const instructions=document.getElementById("vxInstructions");
+  const memoryInput=document.getElementById("vxMemoryInput");
+  const memoryList=document.getElementById("vxMemoryList");
+  const shareStatus=document.getElementById("vxShareStatus");
+
+  function notify(msg){ alert(msg); }
+
+  function syncFeatureFields(){
+    if(instructions) instructions.value=window.vxCustomInstructions||"";
+    if(memoryInput) memoryInput.value="";
+  }
+
+  async function saveInstructions(){
+    window.vxCustomInstructions=(instructions?.value||"").trim().slice(0,5000);
+    localStorage.setItem(VX.key("instructions"),window.vxCustomInstructions);
+    try{ await VX.api("/settings/save",{method:"POST",body:JSON.stringify({email:VX.email(),customInstructions:window.vxCustomInstructions})}); }catch(e){}
+    notify("Custom instructions saved.");
+  }
+
+  async function refreshMemory(){
+    const local=window.vxPersonalMemory||"";
+    if(memoryList) memoryList.textContent=local ? ("Current memory: "+local) : "No personal memory saved.";
+    try{
+      const d=await VX.api("/memory/list",{method:"POST",body:JSON.stringify({email:VX.email()})});
+      if(Array.isArray(d.memory) && d.memory.length){
+        window.vxPersonalMemory=d.memory.join("\\n");
+        localStorage.setItem(VX.key("memory"),window.vxPersonalMemory);
+        if(memoryList) memoryList.textContent="• "+d.memory.join("\\n• ");
+      }
+    }catch(e){}
+  }
+
+  async function saveMemory(){
+    const value=(memoryInput?.value||"").trim();
+    if(!value)return;
+    window.vxPersonalMemory=value.slice(0,5000);
+    localStorage.setItem(VX.key("memory"),window.vxPersonalMemory);
+    try{await VX.api("/memory/save",{method:"POST",body:JSON.stringify({email:VX.email(),memory:value})});}catch(e){}
+    if(memoryInput) memoryInput.value="";
+    refreshMemory();
+  }
+
+  async function clearMemory(){
+    if(!confirm("Clear personal memory for this account?")) return;
+    window.vxPersonalMemory="";
+    localStorage.removeItem(VX.key("memory"));
+    try{await VX.api("/memory/clear",{method:"POST",body:JSON.stringify({email:VX.email()})});}catch(e){}
+    refreshMemory();
+  }
+
+  // Ensure Settings can open the advanced feature panel without changing existing settings.
+  const settingsBtn=document.getElementById("settingsBtn");
+  if(settingsBtn){
+    const toolBtn=document.createElement("button");
+    toolBtn.className="settings-choice";
+    toolBtn.textContent="AI preferences & tools";
+    toolBtn.id="vxOpenFeatures";
+    toolBtn.style.marginTop="10px";
+    const modalCard=document.querySelector("#settingsModal .vyntra-modal-card");
+    if(modalCard && !document.getElementById("vxOpenFeatures")) modalCard.appendChild(toolBtn);
+    toolBtn.addEventListener("click",()=>{syncFeatureFields();refreshMemory();VX.open("vxFeatureModal")});
+  }
+
+  document.getElementById("vxFeatureClose")?.addEventListener("click",()=>VX.close("vxFeatureModal"));
+  featureModal?.addEventListener("click",e=>{if(e.target===featureModal)VX.close("vxFeatureModal")});
+  document.getElementById("vxSaveInstructions")?.addEventListener("click",saveInstructions);
+  document.getElementById("vxRefreshMemory")?.addEventListener("click",refreshMemory);
+  document.getElementById("vxSaveMemory")?.addEventListener("click",saveMemory);
+  document.getElementById("vxClearMemory")?.addEventListener("click",clearMemory);
+
+  function currentChatText(c=VX.current()){
+    if(!c)return "";
+    return (c.messages||[]).map(m=>`${m.role==="user"?"YOU":"VYNTRA AI"}:\n${m.content||""}`).join("\n\n");
+  }
+  function currentMarkdown(c=VX.current()){
+    if(!c)return "";
+    return (c.messages||[]).map(m=>`## ${m.role==="user"?"You":"VYNTRA AI"}\n\n${m.content||""}`).join("\n\n");
+  }
+
+  document.getElementById("vxExportTxt")?.addEventListener("click",()=>VX.download("vyntra-chat.txt",currentChatText()));
+  document.getElementById("vxExportMd")?.addEventListener("click",()=>VX.download("vyntra-chat.md",currentMarkdown(),"text/markdown;charset=utf-8"));
+  document.getElementById("vxExportPdf")?.addEventListener("click",()=>window.print());
+
+  async function exportDocx(){
+    const c=VX.current(); if(!c){notify("Open a chat first.");return;}
+    if(!window.JSZip){notify("DOCX exporter is loading. Please try again.");return;}
+    const zip=new JSZip();
+    const esc=x=>String(x||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    const body=(c.messages||[]).map(m=>`<w:p><w:r><w:t>${esc(m.role==="user"?"You":"VYNTRA AI")}: ${esc(m.content||"")}</w:t></w:r></w:p>`).join("");
+    const contentTypes=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`;
+    const rels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`;
+    const docrels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`;
+    const document=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>`;
+    zip.file("[Content_Types].xml",contentTypes);
+    zip.file("_rels/.rels",rels);
+    zip.file("word/_rels/document.xml.rels",docrels);
+    zip.file("word/document.xml",document);
+    const blob=await zip.generateAsync({type:"blob"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(c.title||"vyntra-chat")+".docx";document.body.appendChild(a);a.click();a.remove();
+  }
+  document.getElementById("vxExportDocx")?.addEventListener("click",exportDocx);
+
+  async function createShare(){
+    const c=VX.current(); if(!c){notify("Open a chat first.");return;}
+    try{
+      const d=await VX.api("/share/create",{method:"POST",body:JSON.stringify({email:VX.email(),chat:{id:c.id,title:c.title,messages:c.messages||[]}})});
+      if(d.url){
+        document.getElementById("vxShareLink").textContent=d.url;
+        document.getElementById("vxRevokeShare").dataset.token=d.token||"";
+        shareStatus.textContent="Share link created.";
+        VX.open("vxShareModal");
+      }else notify(d.message||"Share could not be created.");
+    }catch(e){notify(e.message||"Share failed.");}
+  }
+  document.getElementById("vxShareCurrent")?.addEventListener("click",createShare);
+  document.getElementById("vxCopyShare")?.addEventListener("click",async()=>{
+    const url=document.getElementById("vxShareLink").textContent;
+    if(url) await navigator.clipboard.writeText(url);
+  });
+  document.getElementById("vxRevokeShare")?.addEventListener("click",async(e)=>{
+    const token=e.currentTarget.dataset.token;
+    if(!token)return;
+    try{await VX.api("/share/revoke",{method:"POST",body:JSON.stringify({email:VX.email(),token})});document.getElementById("vxShareLink").textContent="Revoked";}catch(err){notify(err.message||"Revoke failed.");}
+  });
+  document.getElementById("vxShareClose")?.addEventListener("click",()=>VX.close("vxShareModal"));
+  shareModal?.addEventListener("click",e=>{if(e.target===shareModal)VX.close("vxShareModal")});
+
+  // Pin/archive/share extra chat menu actions.
+  const chatMenu=document.getElementById("chatMenu");
+  chatMenu?.addEventListener("click",async(e)=>{
+    const btn=e.target.closest("button[data-action]");
+    if(!btn) return;
+    const id=window.activeMenuChat||null;
+    if(!id) return;
+    const c=chatStore.find(x=>x.id===id); if(!c)return;
+    if(btn.dataset.action==="pin"){
+      c.pinned=!c.pinned; saveChatStore(); renderRecentChats();
+    } else if(btn.dataset.action==="archive"){
+      c.archived=!c.archived; saveChatStore(); renderRecentChats();
+    } else if(btn.dataset.action==="share"){
+      currentChatId=id; createShare();
+    }
+  });
+
+  // Re-render recent chats with Pinned + Today and respecting archive.
+  const prevRenderRecent=renderRecentChats;
+  renderRecentChats=function(){
+    const box=document.getElementById("recentChats"); if(!box)return;
+    box.innerHTML="";
+    const current=chatStore.slice().sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||new Date(b.updatedAt||0)-new Date(a.updatedAt||0)).filter(c=>!c.archived);
+    const pinned=current.filter(c=>c.pinned);
+    const today=current.filter(c=>{const d=new Date(c.updatedAt||c.createdAt),n=new Date();return d.toDateString()===n.toDateString()});
+    const addGroup=(label,list)=>{
+      if(!list.length)return;
+      const g=document.createElement("div");g.className="recent-group-title";g.textContent=label;box.appendChild(g);
+      list.slice(0,20).forEach(c=>{
+        const row=document.createElement("div");row.className="recent-row";
+        const item=document.createElement("div");item.className="recent-item"+(c.id===currentChatId?" active":"");item.innerHTML=`<span class="recent-icon">◌</span><span>${escapeHTML(c.title||"Conversation")}</span>${c.pinned?'<span class="vx-pin">📌</span>':""}`;item.onclick=()=>loadChat(c.id);
+        const m=document.createElement("button");m.className="recent-menu-btn";m.textContent="⋮";m.title="Chat options";m.onclick=ev=>{ev.stopPropagation();activeMenuChat=c.id;const menu=document.getElementById("chatMenu");if(menu){const r=m.getBoundingClientRect();menu.style.left=Math.min(window.innerWidth-180,r.right-170)+"px";menu.style.top=(r.bottom+5)+"px";menu.classList.add("show")}};
+        row.append(item,m);box.appendChild(row);
+      });
+    };
+    addGroup("PINNED",pinned);
+    addGroup("TODAY",today.filter(c=>!c.pinned));
+    if(!pinned.length && !today.length){const e=document.createElement("div");e.className="recent-item";e.style.opacity=".6";e.textContent="No chats today";box.appendChild(e);}
+  };
+
+  function attachEditButtons(){
+    const rows=[...messages.querySelectorAll(".message-row.user")];
+    rows.forEach((row,idx)=>{
+      if(row.querySelector(".vx-user-actions"))return;
+      const action=document.createElement("div");action.className="vx-user-actions";
+      const b=document.createElement("button");b.className="vx-edit-btn";b.textContent="Edit";
+      b.onclick=()=>{
+        const text=conversation[idx]?.content||row.querySelector(".user-bubble")?.textContent||"";
+        promptInput.value=text;
+        conversation=conversation.slice(0,idx);
+        row.remove();
+        while(messages.querySelectorAll(".message-row")[idx]) messages.querySelectorAll(".message-row")[idx].remove();
+        saveCurrentChat();
+        promptInput.focus(); updateSendButton();
+      };
+      action.appendChild(b);
+      row.querySelector(".message-inner")?.appendChild(action);
+    });
+  }
+  const obs=new MutationObserver(attachEditButtons); if(messages)obs.observe(messages,{childList:true,subtree:true}); attachEditButtons();
+
+  function findLastUserAndAI(){
+    const users=conversation.filter(m=>m.role==="user"); const ais=conversation.filter(m=>m.role==="assistant");
+    return {user:users.at(-1)?.content||"",ai:ais.at(-1)?.content||""};
+  }
+  function extractFirstCode(text){const m=String(text||"").match(/```(?:[a-zA-Z0-9_+#.-]+)?\s*([\s\S]*?)```/);return m?m[1].trim():"";}
+  function diffText(a,b){
+    const A=String(a||"").split("\n"),B=String(b||"").split("\n"),n=Math.max(A.length,B.length),out=[];
+    for(let i=0;i<n;i++){if(A[i]===B[i])out.push("  "+(A[i]||""));else{if(A[i]!==undefined)out.push("- "+A[i]);if(B[i]!==undefined)out.push("+ "+B[i]);}}
+    return out.join("\n");
+  }
+  function openDiff(){
+    const d=findLastUserAndAI();const out=diffText(extractFirstCode(d.user),extractFirstCode(d.ai));
+    document.getElementById("vxDiffOutput").textContent=out||"No fenced code found in the latest exchange.";
+    VX.open("vxDiffModal");
+  }
+  document.getElementById("vxDiffClose")?.addEventListener("click",()=>VX.close("vxDiffModal"));
+  diffModal?.addEventListener("click",e=>{if(e.target===diffModal)VX.close("vxDiffModal")});
+
+  async function runCode(code,lang){
+    document.getElementById("vxCodeOutput").textContent="Running…";
+    VX.open("vxCodeModal");
+    try{
+      const d=await VX.api("/execute",{method:"POST",body:JSON.stringify({email:VX.email(),language:lang,code})});
+      document.getElementById("vxCodeOutput").textContent=[
+        d.stdout?`OUTPUT\n${d.stdout}`:"",
+        d.stderr?`ERROR\n${d.stderr}`:"",
+        d.executionTimeMs!=null?`TIME\n${d.executionTimeMs} ms`:""
+      ].filter(Boolean).join("\n\n")||"No output.";
+    }catch(e){document.getElementById("vxCodeOutput").textContent=e.message||"Execution failed.";}
+  }
+  document.getElementById("vxOpenExecutor")?.addEventListener("click",()=>{
+    const d=findLastUserAndAI(); document.getElementById("vxCodeInput").value=extractFirstCode(d.user)||extractFirstCode(d.ai);
+    VX.open("vxCodeModal");
+  });
+  document.getElementById("vxCodeClose")?.addEventListener("click",()=>VX.close("vxCodeModal"));
+  document.getElementById("vxRunCode")?.addEventListener("click",()=>runCode(document.getElementById("vxCodeInput").value,document.getElementById("vxCodeLanguage").value));
+
+  // Add Share/Diff/Run actions to AI messages without replacing existing actions.
+  const baseAddResponseActions=addResponseActions;
+  addResponseActions=function(row,text,promptForResponse){
+    baseAddResponseActions(row,text,promptForResponse);
+    const actions=row.querySelector(".response-actions"); if(!actions)return;
+    if(!actions.querySelector(".vx-share")){const b=document.createElement("button");b.className="response-action vx-share";b.textContent="🔗 Share";b.onclick=createShare;actions.appendChild(b);}
+    if(/```/.test(String(text||"")) && !actions.querySelector(".vx-diff")){const b=document.createElement("button");b.className="response-action vx-diff";b.textContent="↔ Diff";b.onclick=openDiff;actions.appendChild(b);}
+    if(/```/.test(String(text||"")) && !actions.querySelector(".vx-run")){const b=document.createElement("button");b.className="response-action vx-run";b.textContent="▶ Run";b.onclick=()=>{const d=findLastUserAndAI();const code=extractFirstCode(d.ai);document.getElementById("vxCodeInput").value=code;VX.open("vxCodeModal");};actions.appendChild(b);}
+  };
+
+  // Persist attachment context for follow-ups.
+  const baseLoadChat=loadChat;
+  loadChat=function(id){baseLoadChat(id);const c=chatStore.find(x=>x.id===id);window.vxActiveFileContext=String(c?.fileContext||"");};
+  const baseSave=saveCurrentChat;
+  saveCurrentChat=function(){baseSave();const c=chatStore.find(x=>x.id===currentChatId);if(c)c.fileContext=String(window.vxActiveFileContext||"");saveChatStore();};
+  document.addEventListener("DOMContentLoaded",()=>{const c=chatStore.find(x=>x.id===currentChatId);window.vxActiveFileContext=String(c?.fileContext||"");});
+
+  // When a text file is attached, keep its content as future conversation context.
+  document.getElementById("fileInput")?.addEventListener("change",async()=>{
+    try{
+      const f=document.getElementById("fileInput").files?.[0]; if(!f)return;
+      if(/(text\/|json|javascript|css|csv|markdown|html)/i.test((f.type||"")+f.name)){
+        window.vxActiveFileContext=await f.text();
+      } else {
+        window.vxActiveFileContext=`Uploaded file: ${f.name}`;
+      }
+      const c=chatStore.find(x=>x.id===currentChatId); if(c)c.fileContext=window.vxActiveFileContext;
+    }catch(e){}
+  });
+
+  // Image generation / editing via optional Worker provider.
+  const baseSendMessage=sendMessage;
+  sendMessage=async function(){
+    const text=promptInput.value.trim();
+    const mode=window.vyntraAssistantMode||"fast";
+    if(mode!=="image" || !text){return baseSendMessage();}
+    promptInput.value="";
+    const ai=addAIMessage(true);
+    setGenerating(true);
+    try{
+      let data;
+      if(selectedImage){
+        const rd=new FileReader();
+        const dataUrl=await new Promise((res,rej)=>{rd.onload=()=>res(rd.result);rd.onerror=rej;rd.readAsDataURL(selectedImage);});
+        data=await VX.api("/edit-image",{method:"POST",body:JSON.stringify({email:VX.email(),prompt:text,image:dataUrl})});
+      }else{
+        data=await VX.api("/generate-image",{method:"POST",body:JSON.stringify({email:VX.email(),prompt:text})});
+      }
+      const url=data.imageUrl||data.url;
+      ai.content.innerHTML=url?`<img src="${escapeHTML(url)}" alt="Generated image" style="max-width:100%;border-radius:14px">`:`<div>${escapeHTML(data.message||"Image request completed.")}</div>`;
+      conversation.push({role:"assistant",content:data.message||"[image]"});
+      saveCurrentChat();
+    }catch(e){ai.content.innerHTML=`<div>${escapeHTML(e.message||"Image generation is unavailable.")}</div>`;}
+    finally{setGenerating(false);clearImage();}
+  };
+
+  // Save/restore active file context on new chat.
+  const baseReset=resetChat;
+  resetChat=function(){window.vxActiveFileContext="";baseReset();};
+
+  // RAG helper: index current text context if backend is configured.
+  document.getElementById("vxOpenRag")?.addEventListener("click",async()=>{
+    try{
+      const d=await VX.api("/rag/status",{method:"POST",body:JSON.stringify({email:VX.email()})});
+      document.getElementById("vxToolStatus").textContent=JSON.stringify(d);
+    }catch(e){document.getElementById("vxToolStatus").textContent=e.message||"RAG is not configured."}
+  });
+
 })();
 </script>
 

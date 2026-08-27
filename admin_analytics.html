@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VYNTRA AI Admin Analytics</title>
+<style>
+body{margin:0;background:#0b0c10;color:#edf0f6;font-family:Inter,system-ui,sans-serif}
+main{width:min(1100px,94vw);margin:28px auto}.top{display:flex;gap:10px;flex-wrap:wrap}.input{flex:1;min-width:230px;padding:12px;border-radius:12px;border:1px solid #30343d;background:#15171d;color:#fff}.btn{padding:12px 15px;border-radius:12px;border:1px solid #4b47a3;background:#635bff;color:#fff;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.card{background:#14161c;border:1px solid #2a2e37;border-radius:15px;padding:16px}.n{font-size:28px;font-weight:800}.label{color:#9399a6;font-size:12px;margin-top:4px}.chart{margin-top:18px}.bar{display:flex;align-items:end;gap:5px;height:220px;padding-top:20px}.bar span{flex:1;background:#6b5cff;min-width:4px}.small{color:#959ba8;font-size:12px}@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:480px){.grid{grid-template-columns:1fr}}
+</style>
+</head><body><main>
+<h1>VYNTRA AI Admin Analytics</h1>
+<div class="top"><input id="secret" class="input" type="password" placeholder="X-Admin-Secret"><button class="btn" id="load">Load analytics</button></div>
+<div id="status" class="small"></div><div id="metrics" class="grid"></div><div class="card chart"><h3>Daily requests</h3><div id="chart" class="bar"></div><div id="days" class="small"></div></div>
+<script>
+const API="https://vyntra-ai-api.ezhilarasanpofficial.workers.dev";
+document.getElementById("load").onclick=async()=>{const status=document.getElementById("status");status.textContent="Loading…";try{const r=await fetch(API+"/admin/analytics",{headers:{"X-Admin-Secret":document.getElementById("secret").value}});const d=await r.json();if(!r.ok)throw Error(d.error||"Unauthorized");const m=d.metrics||{};document.getElementById("metrics").innerHTML=Object.entries(m).map(([k,v])=>`<div class="card"><div class="n">${v}</div><div class="label">${k.replace(/[A-Z]/g,m=>" "+m).replace(/^./,m=>m.toUpperCase())}</div></div>`).join("");const daily=(d.daily||[]).slice().reverse();const max=Math.max(1,...daily.map(x=>Number(x.requests||0)));document.getElementById("chart").innerHTML=daily.map(x=>`<span title="${x.day}: ${x.requests}" style="height:${Math.max(3,Number(x.requests||0)/max*180)}px"></span>`).join("");document.getElementById("days").textContent=daily.map(x=>`${x.day}: ${x.requests}`).join(" · ");status.textContent="Loaded."; }catch(e){status.textContent=e.message||"Failed";}};
+</script></main></body></html>
