@@ -448,6 +448,15 @@ td{
 .activity-list{display:flex;flex-direction:column;gap:12px}
 .act-item{background:#0f172a;border:1px solid #1f2b40;border-left:4px solid #6366f1;padding:14px 16px;border-radius:15px}
 .act-item:hover{border-color:#334765;background:#111b2d}
+.act-item{cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.act-item:active{transform:scale(.998)}
+.act-details{display:none}
+.act-item.open .act-details{display:block}
+.act-chevron{font-size:13px;color:#71809a;transition:transform .18s ease}
+.act-item.open .act-chevron{transform:rotate(180deg)}
+.act-preview{margin-top:7px;color:#cbd5e1;font-size:12px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act-item.open .act-preview{display:none}
+
 .act-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .act-title{font-size:14px;font-weight:800;color:#f8fafc;display:flex;align-items:center;gap:8px;text-transform:capitalize}
 .act-badge{font-size:10px;font-weight:800;text-transform:uppercase;padding:5px 8px;border-radius:999px;background:#12243a;color:#7dd3fc;border:1px solid #1e3a5f;white-space:nowrap}
@@ -1593,16 +1602,26 @@ async function viewActivity(email){
           metaText = Object.entries(parsed).slice(0,4).map(([k,v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`).join(" • ");
         }catch(_e){}
       }
-      return `<div class="act-item">
+      return `<div class="act-item" tabindex="0" role="button" aria-expanded="false" onclick="toggleActivityItem(this)">
         <div class="act-top">
-          <div class="act-title"><span>${iconFor(type)}</span><span>${esc(type)}</span></div>
+          <div class="act-title">
+            <span>${iconFor(type)}</span>
+            <span>${esc(type)}</span>
+            <span class="act-chevron">⌄</span>
+          </div>
           <span class="act-badge">${esc(item.status || "success")}</span>
         </div>
-        <div class="act-prompt">${esc(primary)}</div>
-        <div class="act-meta">
-          <span>📅 ${esc(fmt(item.created_at))}</span>
-          ${item.source_feature ? `<span>⚙ ${esc(item.source_feature)}</span>` : ""}
-          ${metaText ? `<span>ℹ ${esc(metaText)}</span>` : ""}
+
+        <div class="act-preview">${esc(primary)}</div>
+
+        <div class="act-details">
+          <div class="act-prompt">${esc(primary)}</div>
+
+          <div class="act-meta">
+            <span>📅 ${esc(fmt(item.created_at))}</span>
+            ${item.source_feature ? `<span>⚙ ${esc(item.source_feature)}</span>` : ""}
+            ${metaText ? `<span>ℹ ${esc(metaText)}</span>` : ""}
+          </div>
         </div>
       </div>`;
     }).join("");
@@ -1619,6 +1638,17 @@ async function viewActivity(email){
   }catch(err){
     $("actBody").innerHTML = `<div class="activity-empty"><div class="emoji">⚠️</div><h3 style="color:#f87171;">Failed to load activity</h3><p>${esc(err.message || "Unable to load activity.")}</p></div>`;
   }
+}
+
+function toggleActivityItem(element){
+  document
+    .querySelectorAll(".act-item.open")
+    .forEach(item => {
+      if(item !== element) item.classList.remove("open");
+    });
+
+  element.classList.toggle("open");
+  element.setAttribute("aria-expanded", element.classList.contains("open") ? "true" : "false");
 }
 
 function closeActModal(){
@@ -2059,6 +2089,16 @@ window.addEventListener(
 
   }
 );
+
+
+document.addEventListener("keydown", event => {
+  const item = event.target.closest(".act-item");
+  if(!item) return;
+  if(event.key === "Enter" || event.key === " "){
+    event.preventDefault();
+    toggleActivityItem(item);
+  }
+});
 
 </script>
 
