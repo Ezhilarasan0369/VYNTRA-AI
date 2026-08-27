@@ -9,12 +9,24 @@ body{margin:0;background:#0b0c10;color:#eef0f5;font-family:Inter,system-ui,sans-
 main{width:min(860px,92vw);margin:30px auto;padding-bottom:60px}
 .card{background:#14161c;border:1px solid #2c2f38;border-radius:18px;padding:22px;margin:14px 0}
 h1{font-size:24px}h2{font-size:17px;margin-bottom:8px}.sub{color:#959ba8;font-size:13px}.msg{padding:14px 0;border-bottom:1px solid #282b33;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}.role{font-weight:700;margin-bottom:7px}
+.error{color:#ff9b9b}
 </style>
 </head>
 <body><main>
 <h1>VYNTRA AI</h1><div class="sub">Shared conversation</div><div id="root" class="card">Loading…</div>
 <script>
-const API=(location.origin.includes("github.io")? "https://vyntra-ai-api.ezhilarasanpofficial.workers.dev":"http://127.0.0.1:8787");
-(async()=>{const token=new URLSearchParams(location.search).get("token");const root=document.getElementById("root");if(!token){root.textContent="Invalid share link.";return;}try{const r=await fetch(API+"/share/view?token="+encodeURIComponent(token));const d=await r.json();if(!r.ok||!d.success){root.textContent=d.error||"Share unavailable.";return;}const c=d.chat||{};root.innerHTML=`<h2>${String(c.title||"Conversation").replace(/[&<>]/g,"")}</h2>`+(c.messages||[]).map(m=>`<div class="msg"><div class="role">${m.role==="user"?"You":"VYNTRA AI"}</div><div>${String(m.content||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div></div>`).join("");}catch(e){root.textContent="Unable to load this share.";}})();
+const API=(location.origin.includes("github.io")?"https://vyntra-ai-api.ezhilarasanpofficial.workers.dev":location.origin);
+const esc=v=>String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+(async()=>{
+ const token=new URLSearchParams(location.search).get("token"),root=document.getElementById("root");
+ if(!token){root.innerHTML='<div class="error">Invalid share link.</div>';return;}
+ try{
+  const r=await fetch(API+"/share/view?token="+encodeURIComponent(token));
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.success){root.innerHTML='<div class="error">'+esc(d.error||"Share unavailable.")+'</div>';return;}
+  const c=d.chat||{};
+  root.innerHTML="<h2>"+esc(c.title||"Conversation")+"</h2>"+(c.messages||[]).map(m=>'<div class="msg"><div class="role">'+(m.role==="user"?"You":"VYNTRA AI")+'</div><div>'+esc(m.content||"")+"</div></div>").join("");
+ }catch(e){root.innerHTML='<div class="error">Unable to load this share.</div>';}
+})();
 </script>
 </main></body></html>

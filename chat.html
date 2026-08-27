@@ -5146,6 +5146,156 @@ updateScrollButton();
     }catch(e){document.getElementById("vxToolStatus").textContent=e.message||"RAG is not configured."}
   });
 
+  // ==========================================================
+  // VYNTRA CORE SYSTEMS PATCH
+  // Uses existing chat/auth/API functions; adds only missing
+  // production features and server persistence.
+  // ==========================================================
+  (function(){
+    const adv = {
+      api: async function(path, options={}) {
+        const url = (typeof API_BASE_URL!=="undefined" ? API_BASE_URL : "https://vyntra-ai-api.ezhilarasanpofficial.workers.dev") + path;
+        const opts = {...options, headers:{ "Content-Type":"application/json", ...(options.headers||{}) }};
+        const r = await fetch(url, opts);
+        const d = await r.json().catch(()=>({}));
+        if(!r.ok) throw new Error(d.error || "Request failed.");
+        return d;
+      },
+      email: function(){ return String(
+        (typeof currentUser!=="undefined" && currentUser?.email) ||
+        (typeof VX!=="undefined" && VX.email?.()) ||
+        localStorage.getItem("vyntra_user_email") || ""
+      ).trim().toLowerCase(); }
+    };
+
+    function advModal(title, html, init){
+      const wrap=document.createElement("div");
+      wrap.className="vx-modal";
+      wrap.style.display="flex";
+      wrap.innerHTML=`<div class="vx-card" style="max-width:720px;width:min(92vw,720px)"><button class="vx-close" type="button">×</button><h2>${title}</h2><div style="color:#9297a4;font-size:13px;margin-bottom:12px">${html}</div></div>`;
+      document.body.appendChild(wrap);
+      const close=()=>wrap.remove();
+      wrap.querySelector(".vx-close").onclick=close;
+      wrap.onclick=e=>{if(e.target===wrap)close()};
+      init?.(wrap.querySelector(".vx-card"),close);
+      return wrap;
+    }
+
+    function addAdvancedNavButtons(){
+      const bottom=document.querySelector(".sidebar-bottom");
+      if(!bottom || bottom.dataset.advancedAdded) return;
+      bottom.dataset.advancedAdded="1";
+      const make=(label,icon,fn)=>{
+        const b=document.createElement("div");
+        b.className="sidebar-link";
+        b.innerHTML=`<span>${icon}</span><span>${label}</span>`;
+        b.addEventListener("click",fn);
+        bottom.insertBefore(b,bottom.querySelector(".sidebar-divider")||bottom.firstChild);
+        return b;
+      };
+      make("Learning & Goals","🎯",openLearning);
+      make("Memory","🧠",openServerMemory);
+    }
+
+    async function openLearning(){
+      const email=adv.email();
+      if(!email){alert("Please sign in first.");return;}
+      try{
+        const d=await adv.api("/profile/get",{method:"POST",body:JSON.stringify({email})});
+        const p=d.profile||{};
+        advModal("🎯 Learning & Goals",`
+          <div style="display:grid;gap:10px">
+            <label>Goal<input id="vgGoal" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#111;color:#fff" value="${String(p.goal||"").replace(/"/g,"&quot;")}" placeholder="I want to become a Java developer."></label>
+            <label>Level<input id="vgLevel" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#111;color:#fff" value="${String(p.level||"").replace(/"/g,"&quot;")}" placeholder="Beginner / Intermediate / Expert"></label>
+            <div id="vgTopics">Loading learning map…</div>
+            <div style="display:flex;gap:8px"><button id="vgSave" class="response-action">Save goal</button><button id="vgSummary" class="response-action">Learning summary</button></div>
+          </div>
+        `,(card,close)=>{
+          card.querySelector("#vgSave").onclick=async()=>{
+            try{await adv.api("/profile/save",{method:"POST",body:JSON.stringify({email,goal:card.querySelector("#vgGoal").value,level:card.querySelector("#vgLevel").value})}); alert("Goal saved.");}
+            catch(e){alert(e.message);}
+          };
+          card.querySelector("#vgSummary").onclick=async()=>{
+            try{const s=await adv.api("/learning/summary",{method:"POST",body:JSON.stringify({email})}); card.querySelector("#vgTopics").innerHTML=(s.topics||[]).map(x=>`<div style="padding:8px 0;border-bottom:1px solid #292d35">${String(x.topic||"general")} — ${x.count||0} interactions</div>`).join("")||"No learning activity yet.";}
+            catch(e){card.querySelector("#vgTopics").textContent=e.message;}
+          };
+          card.querySelector("#vgSummary").click();
+        });
+      }catch(e){alert(e.message);}
+    }
+
+    async function openServerMemory(){
+      const email=adv.email();
+      if(!email){alert("Please sign in first.");return;}
+      try{
+        const d=await adv.api("/memory/list",{method:"POST",body:JSON.stringify({email})});
+        const list=(d.memories||[]).map(m=>`<div class="vx-box" style="margin:7px 0;display:flex;justify-content:space-between;gap:10px"><span>${String(m.memory||"").replace(/</g,"&lt;")}</span><button class="response-action" data-mid="${m.id}">Delete</button></div>`).join("")||"<div>No saved memories.</div>";
+        advModal("🧠 Personal Memory",`
+          <div style="margin-bottom:10px">Stored securely for this account. Passwords/API keys/secrets are blocked.</div>
+          <div id="vmsList">${list}</div>
+          <textarea id="vmsNew" style="width:100%;min-height:80px;margin-top:10px;background:#111;color:#fff" placeholder="Remember that I am preparing for Java interviews."></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px"><button id="vmsSave" class="response-action">Save memory</button><button id="vmsClear" class="response-action">Clear all</button></div>
+        `,(card,close)=>{
+          card.querySelector("#vmsSave").onclick=async()=>{const v=card.querySelector("#vmsNew").value.trim();if(!v)return;try{await adv.api("/memory/save",{method:"POST",body:JSON.stringify({email,memory:v})});close();openServerMemory();}catch(e){alert(e.message);}};
+          card.querySelector("#vmsClear").onclick=async()=>{if(confirm("Clear all saved memories?")){await adv.api("/memory/clear",{method:"POST",body:JSON.stringify({email})});close();openServerMemory();}};
+          card.querySelectorAll("[data-mid]").forEach(b=>b.onclick=async()=>{await adv.api("/memory/delete",{method:"POST",body:JSON.stringify({email,id:Number(b.dataset.mid)})});close();openServerMemory();});
+        });
+      }catch(e){alert(e.message);}
+    }
+
+    // Make custom instructions and existing memory button persist server-side too.
+    document.addEventListener("click",async(e)=>{
+      const b=e.target.closest("#viSave");
+      if(b){
+        setTimeout(async()=>{
+          const email=adv.email(), textarea=document.getElementById("viText");
+          if(email && textarea){try{await adv.api("/settings/save",{method:"POST",body:JSON.stringify({email,custom_instructions:textarea.value.trim()})});}catch(err){console.warn("settings sync",err);}}
+        },0);
+      }
+    },true);
+
+    // Add server settings hydration on load without overwriting current UI.
+    window.addEventListener("load",async()=>{
+      try{
+        addAdvancedNavButtons();
+        const email=adv.email();
+        if(email){
+          const d=await adv.api("/settings/get",{method:"POST",body:JSON.stringify({email})});
+          if(d.settings?.custom_instructions){
+            try{ localStorage.setItem((typeof nsKey==="function"?nsKey("instructions"):"vyntra_instructions"),JSON.stringify(d.settings.custom_instructions)); }catch{}
+          }
+        }
+      }catch{}
+    });
+
+    // Safety signal logging for user prompts, non-blocking.
+    const textarea=document.getElementById("prompt");
+    textarea?.addEventListener("change",async()=>{
+      const email=adv.email(),text=textarea.value||"";
+      if(email && text) adv.api("/safety/check",{method:"POST",body:JSON.stringify({email,text})}).catch(()=>{});
+    });
+
+    // RAG index helper for text files; does not interfere with existing upload pipeline.
+    window.vyntraIndexCurrentFile=async function(file){
+      const email=adv.email(); if(!email||!file)return;
+      try{
+        if(/(text\/|json|javascript|css|csv|markdown|html)/i.test((file.type||"")+file.name)){
+          const text=await file.text();
+          if(text) await adv.api("/rag/index",{method:"POST",body:JSON.stringify({email,file_name:file.name,text})});
+        }
+      }catch(e){console.warn("RAG index",e);}
+    };
+
+    // Call after file selection, while keeping existing handler intact.
+    document.getElementById("fileInput")?.addEventListener("change",()=>{
+      const f=document.getElementById("fileInput").files?.[0];
+      if(f) window.vyntraIndexCurrentFile?.(f);
+      if(f) adv.api("/learning/event",{method:"POST",body:JSON.stringify({email:adv.email(),topic:f.name,intent:"file_analysis",mode:"file",confidence:.5})}).catch(()=>{});
+    },true);
+
+    addAdvancedNavButtons();
+  })();
+
 })();
 </script>
 
